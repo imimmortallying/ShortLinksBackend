@@ -48,7 +48,7 @@ exports.app.get('/users', (req, res) => {
     }
     res.json(foundUsers);
 });
-// id URI не типизирую - всегда строка
+// id URI не типизирую - всегда строка. Потом все-таки типизировал, чтобы унифицировать 
 exports.app.get('/users/:id', (req, res) => {
     const foundUser = db.users.find(user => user.id === req.params.id);
     // в запросе я не вижу свойства params. Тогда, оно должно формироваться фреймворком исходя из эндпоинта?

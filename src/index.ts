@@ -1,9 +1,11 @@
 // const express = require('express');
 import express, {Request, Response} from 'express';
 import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../types/types';
-import { CoursesGetQueryModel } from './model/CoursesGetQueryModel';
-import { CoursesPostBodyModel } from './model/CoursesPostBodyModel';
-import { CoursesPutBodyModel } from './model/CoursesPutBodyModel';
+import {UsersGetQueryModel } from './model/UsersGetQueryModel';
+import {UsersPostBodyModel } from './model/UsersPostBodyModel';
+import {UsersPutBodyModel } from './model/UsersPutBodyModel';
+import { UserResViewModel } from './model/UserResViewModel';
+import { UserUriIdString } from './model/UserUriIDstring';
 
 const cors = require("cors"); // !middleware для избежания cors ошибки. С cors разобраться позже!
 
@@ -50,7 +52,7 @@ app.get('/', (req:Request, res:Response) => {
   // else res.sendStatus(404) // лучше писать явный код
 })
 
-app.get('/users', (req:RequestWithQuery<CoursesGetQueryModel>, res:Response<User[]>) => {
+app.get('/users', (req:RequestWithQuery<UsersGetQueryModel>, res:Response<UserResViewModel[]>) => {
 
   let foundUsers = db.users;
 
@@ -61,8 +63,8 @@ app.get('/users', (req:RequestWithQuery<CoursesGetQueryModel>, res:Response<User
   res.json(foundUsers)
 })
 
-// id URI не типизирую - всегда строка
-app.get('/users/:id', (req:RequestWithParams<{id:string}>, res:Response) => { // работа с URI, теперь могу делать запрос на конкретный id 
+// id URI не типизирую - всегда строка. Потом все-таки типизировал, чтобы унифицировать 
+app.get('/users/:id', (req:RequestWithParams<UserUriIdString>, res:Response<UserResViewModel>) => { // работа с URI, теперь могу делать запрос на конкретный id 
 
   const foundUser = db.users.find(user => user.id === req.params.id)
   // в запросе я не вижу свойства params. Тогда, оно должно формироваться фреймворком исходя из эндпоинта?
@@ -76,7 +78,7 @@ app.get('/users/:id', (req:RequestWithParams<{id:string}>, res:Response) => { //
   res.json(foundUser)
 })
 
-app.post('/users', (req:RequestWithBody<CoursesPostBodyModel>, res:Response<User>) => {
+app.post('/users', (req:RequestWithBody<UsersPostBodyModel>, res:Response<UserResViewModel>) => {
 
   // валидация
   if (!req.body.name || !req.body.specialty) {
@@ -98,7 +100,7 @@ app.post('/users', (req:RequestWithBody<CoursesPostBodyModel>, res:Response<User
 })
 
 // id URI не типизирую - всегда строка
-app.delete('/users/:id', (req:RequestWithParams<{id:string}>, res:Response)=>{
+app.delete('/users/:id', (req:RequestWithParams<UserUriIdString>, res:Response)=>{
 
   if (!db.users.find(user => user.id === req.params.id)) {
     res.sendStatus(HTTP_Statuses.NOT_FOUND_404);
@@ -113,7 +115,7 @@ app.delete('/users/:id', (req:RequestWithParams<{id:string}>, res:Response)=>{
 // хотя методы post и put требую одинаковые объекты, все равно разделю на сущности, потому что put может отличаться от post, например можно отправить
 // не весь объект, который изменился, чтобы я тут искал изменения, а лишь принимать изменившиеся поля, тогда формы объектов put и post
 // будут очевидно отличаться
-app.put('/users/:id', (req:RequestWithParamsAndBody<{id:string}, CoursesPutBodyModel>, res:Response)=>{
+app.put('/users/:id', (req:RequestWithParamsAndBody<UserUriIdString, UsersPutBodyModel>, res:Response)=>{
   const foundUser = db.users.find(user => user.id === req.params.id)
   if (!foundUser){
     res.sendStatus(HTTP_Statuses.NOT_FOUND_404);
