@@ -1,9 +1,13 @@
 // const express = require('express');
 import express, {Request, Response} from 'express';
+import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../types/types';
+import { CoursesGetQueryModel } from './model/CoursesGetQueryModel';
+import { CoursesPostBodyModel } from './model/CoursesPostBodyModel';
+import { CoursesPutBodyModel } from './model/CoursesPutBodyModel';
 
 const cors = require("cors"); // !middleware для избежания cors ошибки. С cors разобраться позже!
 
-const app = express();
+export const app = express(); // экспорт для передачи в тест
 const port = 3000
 
 interface User {
@@ -26,7 +30,7 @@ const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware)
 app.use(cors())
 
-const db = {
+const db: {users: User[]} = {
   users: [
     { id: '1', name: 'alex', specialty: 'backend' },
     { id: '2', name: 'dima', specialty: 'frontend' },
@@ -46,18 +50,19 @@ app.get('/', (req:Request, res:Response) => {
   // else res.sendStatus(404) // лучше писать явный код
 })
 
-app.get('/users', (req:Request, res:Response) => {
+app.get('/users', (req:RequestWithQuery<CoursesGetQueryModel>, res:Response<User[]>) => {
 
   let foundUsers = db.users;
 
   // users?specialty=end; видимо, "end" будет query
   if (req.query.specialty) {
-    foundUsers = db.users.filter(user => user.specialty.indexOf(req.query.specialty as string) > -1) // стандартный поиск подстроки и возвращение объекта
+    foundUsers = db.users.filter(user => user.specialty.indexOf(req.query.specialty) > -1) // стандартный поиск подстроки и возвращение объекта
   }
   res.json(foundUsers)
 })
 
-app.get('/users/:id', (req:Request, res:Response) => { // работа с URI, теперь могу делать запрос на конкретный id 
+// id URI не типизирую - всегда строка
+app.get('/users/:id', (req:RequestWithParams<{id:string}>, res:Response) => { // работа с URI, теперь могу делать запрос на конкретный id 
 
   const foundUser = db.users.find(user => user.id === req.params.id)
   // в запросе я не вижу свойства params. Тогда, оно должно формироваться фреймворком исходя из эндпоинта?
@@ -71,7 +76,7 @@ app.get('/users/:id', (req:Request, res:Response) => { // работа с URI, �
   res.json(foundUser)
 })
 
-app.post('/users', (req:Request, res:Response) => {
+app.post('/users', (req:RequestWithBody<CoursesPostBodyModel>, res:Response<User>) => {
 
   // валидация
   if (!req.body.name || !req.body.specialty) {
@@ -92,7 +97,8 @@ app.post('/users', (req:Request, res:Response) => {
     .json(newUser);
 })
 
-app.delete('/users/:id', (req:Request, res:Response)=>{
+// id URI не типизирую - всегда строка
+app.delete('/users/:id', (req:RequestWithParams<{id:string}>, res:Response)=>{
 
   if (!db.users.find(user => user.id === req.params.id)) {
     res.sendStatus(HTTP_Statuses.NOT_FOUND_404);
@@ -104,7 +110,10 @@ app.delete('/users/:id', (req:Request, res:Response)=>{
   res.sendStatus(HTTP_Statuses.NO_CONTENT_204) // no content
 })
 
-app.put('/users/:id', (req:Request, res:Response)=>{
+// хотя методы post и put требую одинаковые объекты, все равно разделю на сущности, потому что put может отличаться от post, например можно отправить
+// не весь объект, который изменился, чтобы я тут искал изменения, а лишь принимать изменившиеся поля, тогда формы объектов put и post
+// будут очевидно отличаться
+app.put('/users/:id', (req:RequestWithParamsAndBody<{id:string}, CoursesPutBodyModel>, res:Response)=>{
   const foundUser = db.users.find(user => user.id === req.params.id)
   if (!foundUser){
     res.sendStatus(HTTP_Statuses.NOT_FOUND_404);
