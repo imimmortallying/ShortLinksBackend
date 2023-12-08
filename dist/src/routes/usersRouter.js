@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersRouter = void 0;
 const express_1 = __importDefault(require("express"));
+const express_validator_1 = require("express-validator");
+const inputValidationMiddleware_1 = require("../middleweres/inputValidationMiddleware");
 var HTTP_Statuses;
 (function (HTTP_Statuses) {
     HTTP_Statuses[HTTP_Statuses["OK_200"] = 200] = "OK_200";
@@ -22,18 +24,14 @@ const db = {
         { id: '5', name: 'zelensky', specialty: 'clown' },
     ]
 };
+//! ошибки добавляются в массив, проверка работает корректно, но, если не указано name поле, то вернет сразу обе ошибки
+// как вернуть только 1 и нужно ли?
+const nameValidation = () => [
+    (0, express_validator_1.body)('name').trim().not().isEmpty().withMessage('Name fields is required'),
+    (0, express_validator_1.body)('name').trim().isLength({ min: 3, max: 10 }).withMessage('Name length should be from 3 to 10 characters')
+];
 // export const getUsersRoutes = () => {
 exports.usersRouter = express_1.default.Router();
-// usersRouter.get('/', (req: Request, res: Response) => {
-//     const a = 5;
-//     if (a > 6) {
-//         res.send({ message: `a > 36` })
-//     }
-//     else res.send({ message: "a > 66" })
-//     // else res.json({message: "a > 6"}) // лучше вернуть так, с явным приведением
-//     // else res.send(404) // число вернется статусом
-//     // else res.sendStatus(404) // лучше писать явный код
-// })
 exports.usersRouter.get('/', (req, res) => {
     let foundUsers = db.users;
     // users?specialty=end; видимо, "end" будет query
@@ -53,12 +51,12 @@ exports.usersRouter.get('/:id', (req, res) => {
     }
     res.json(foundUser);
 });
-exports.usersRouter.post('/', (req, res) => {
+exports.usersRouter.post('/', nameValidation(), inputValidationMiddleware_1.inputValidationMiddleware, (req, res) => {
     // валидация
-    if (!req.body.name || !req.body.specialty) {
-        res.sendStatus(HTTP_Statuses.BAD_REQUEST_400);
-        return;
-    }
+    // if (!req.body.name || !req.body.specialty) {
+    //     res.sendStatus(HTTP_Statuses.BAD_REQUEST_400)
+    //     return;
+    // }
     const newUser = {
         id: crypto.randomUUID(),
         name: req.body.name,
