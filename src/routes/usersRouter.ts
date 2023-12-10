@@ -7,6 +7,7 @@ import { UserResViewModel } from '../model/UserResViewModel';
 import { UserUriIdString } from '../model/UserUriIdString';
 import { body, check } from 'express-validator';
 import { inputValidationMiddleware } from '../middleweres/inputValidationMiddleware';
+import { usersRepository } from '../repositories/usersRepository';
 
 
 
@@ -45,16 +46,22 @@ const nameValidation = () => [
 
 export const usersRouter = express.Router();
 
-usersRouter.get('/', (req: RequestWithQuery<UsersGetQueryModel>, res: Response<UserResViewModel[]>) => {
+usersRouter.get('/',
+    async (req: RequestWithQuery<UsersGetQueryModel>, res: Response<UserResViewModel[]>) => {
+        // отсюда логику по работе с бд нужно вынести в отдельный слой - repositories
+        // const foundUsers = await usersRepository.findProducts(req.query.specialty)
 
-    let foundUsers = db.users;
-
-    // users?specialty=end; видимо, "end" будет query
-    if (req.query.specialty) {
-        foundUsers = db.users.filter(user => user.specialty.indexOf(req.query.specialty) > -1) // стандартный поиск подстроки и возвращение объекта
-    }
-    res.json(foundUsers)
-})
+        let foundUsers = await usersRepository.findUsers(req.query.specialty)
+        //@ts-ignore
+        res.json(foundUsers)
+        //todo in memory
+        // let foundUsers = db.users;
+        // // users?specialty=end; видимо, "end" будет query
+        // if (req.query.specialty) {
+        //     foundUsers = db.users.filter(user => user.specialty.indexOf(req.query.specialty) > -1) // стандартный поиск подстроки и возвращение объекта
+        // }
+        // res.json(foundUsers)
+    })
 
 // id URI не типизирую - всегда строка. Потом все-таки типизировал, чтобы унифицировать 
 usersRouter.get('/:id', (req: RequestWithParams<UserUriIdString>, res: Response<UserResViewModel>) => { // работа с URI, теперь могу делать запрос на конкретный id 

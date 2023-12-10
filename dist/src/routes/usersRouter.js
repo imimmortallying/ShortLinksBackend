@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -7,6 +16,7 @@ exports.usersRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
 const inputValidationMiddleware_1 = require("../middleweres/inputValidationMiddleware");
+const usersRepository_1 = require("../repositories/usersRepository");
 var HTTP_Statuses;
 (function (HTTP_Statuses) {
     HTTP_Statuses[HTTP_Statuses["OK_200"] = 200] = "OK_200";
@@ -32,14 +42,20 @@ const nameValidation = () => [
 ];
 // export const getUsersRoutes = () => {
 exports.usersRouter = express_1.default.Router();
-exports.usersRouter.get('/', (req, res) => {
-    let foundUsers = db.users;
-    // users?specialty=end; видимо, "end" будет query
-    if (req.query.specialty) {
-        foundUsers = db.users.filter(user => user.specialty.indexOf(req.query.specialty) > -1); // стандартный поиск подстроки и возвращение объекта
-    }
+exports.usersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // отсюда логику по работе с бд нужно вынести в отдельный слой - repositories
+    // const foundUsers = await usersRepository.findProducts(req.query.specialty)
+    let foundUsers = yield usersRepository_1.usersRepository.findUsers(req.query.specialty);
+    //@ts-ignore
     res.json(foundUsers);
-});
+    //todo in memory
+    // let foundUsers = db.users;
+    // // users?specialty=end; видимо, "end" будет query
+    // if (req.query.specialty) {
+    //     foundUsers = db.users.filter(user => user.specialty.indexOf(req.query.specialty) > -1) // стандартный поиск подстроки и возвращение объекта
+    // }
+    // res.json(foundUsers)
+}));
 // id URI не типизирую - всегда строка. Потом все-таки типизировал, чтобы унифицировать 
 exports.usersRouter.get('/:id', (req, res) => {
     const foundUser = db.users.find(user => user.id === req.params.id);

@@ -1,4 +1,5 @@
 "use strict";
+// import { client } from "./db"
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,15 +10,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.app = void 0;
-const app_1 = require("./app");
-Object.defineProperty(exports, "app", { enumerable: true, get: function () { return app_1.app; } });
-const db_1 = require("./repositories/db");
-const port = process.env.PORT || 5000;
-const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, db_1.runDb)();
-    app_1.app.listen(port, () => {
-        console.log(`Example app listening on port ${port}`);
-    });
-});
-startApp();
+exports.usersRepository = void 0;
+const db_1 = require("./db");
+// const usersCollection = client.db("testDB").collection("users")
+exports.usersRepository = {
+    findUsers(specialty) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (specialty) {
+                return db_1.usersCollection.find({ specialty: { $regex: specialty } }).toArray();
+            }
+            else {
+                return db_1.usersCollection.find({}).toArray();
+            }
+        });
+    }
+};
