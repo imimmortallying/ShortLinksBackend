@@ -9,24 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.usersRepository = void 0;
+exports.authRepository = void 0;
 const db_1 = require("./db");
-exports.usersRepository = {
-    // заменить на поиск только 1 пользователя по логину и паролю. Зачем мне тогда id? По этому id буду искать внутренности юзера в др коллекции?
-    findUsers(specialty) {
+exports.authRepository = {
+    checkIsUserRegistred(username) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (specialty) {
-                console.log();
-                return db_1.usersCollection.find({ specialty: { $regex: specialty } }).toArray();
-            }
-            else {
-                return db_1.usersCollection.find({}).toArray();
-            }
+            return db_1.usersCollection.find({ username: username }).toArray();
         });
     },
-    createUser() {
+    createNewUser(newUser) {
         return __awaiter(this, void 0, void 0, function* () {
-            // принимает логин и пароль и возвращает тру?
+            db_1.usersCollection.insertOne(newUser);
+            return newUser;
         });
     }
 };

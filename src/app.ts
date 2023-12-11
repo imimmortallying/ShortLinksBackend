@@ -1,6 +1,7 @@
 // const express = require('express');
 import express from 'express';
-import { usersRouter } from './routes/usersRouter';
+import { exmpUsersRouter } from './routes/exmpUsersRouter';
+import { authRouter } from './routes/authRouter';
 
 const cors = require("cors"); // !middleware для избежания cors ошибки. С cors разобраться позже!
 
@@ -15,7 +16,8 @@ app.use(jsonBodyMiddleware)
 app.use(cors())
 
 
-app.use("/users", usersRouter)
+app.use("/users", exmpUsersRouter)
+app.use("/auth", authRouter)
 
 
 

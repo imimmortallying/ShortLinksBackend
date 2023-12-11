@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.usersRouter = void 0;
+exports.exmpUsersRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
 const inputValidationMiddleware_1 = require("../middleweres/inputValidationMiddleware");
@@ -41,8 +41,8 @@ const nameValidation = () => [
     (0, express_validator_1.body)('name').trim().isLength({ min: 3, max: 10 }).withMessage('Name length should be from 3 to 10 characters')
 ];
 // export const getUsersRoutes = () => {
-exports.usersRouter = express_1.default.Router();
-exports.usersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.exmpUsersRouter = express_1.default.Router();
+exports.exmpUsersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // отсюда логику по работе с бд нужно вынести в отдельный слой - repositories
     // const foundUsers = await usersRepository.findProducts(req.query.specialty)
     let foundUsers = yield exmpUsersRepository_1.usersRepository.findUsers(req.query.specialty);
@@ -57,7 +57,7 @@ exports.usersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, fun
     // res.json(foundUsers)
 }));
 // id URI не типизирую - всегда строка. Потом все-таки типизировал, чтобы унифицировать 
-exports.usersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.exmpUsersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const foundUser = yield exmpUsersRepository_1.usersRepository.findUserById(req.params.id);
     //? in memory db
     // const foundUser = db.users.find(user => user.id === req.params.id)
@@ -70,7 +70,7 @@ exports.usersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     //@ts-ignore
     res.json(foundUser);
 }));
-exports.usersRouter.post('/', nameValidation(), inputValidationMiddleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.exmpUsersRouter.post('/', nameValidation(), inputValidationMiddleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // валидация
     // if (!req.body.name || !req.body.specialty) {
     //     res.sendStatus(HTTP_Statuses.BAD_REQUEST_400)
@@ -95,7 +95,7 @@ exports.usersRouter.post('/', nameValidation(), inputValidationMiddleware_1.inpu
         .json(newUser);
 }));
 // id URI не типизирую - всегда строка
-exports.usersRouter.delete('/:id', (req, res) => {
+exports.exmpUsersRouter.delete('/:id', (req, res) => {
     if (!db.users.find(user => user.id === req.params.id)) {
         res.sendStatus(HTTP_Statuses.NOT_FOUND_404);
         return;
@@ -106,7 +106,7 @@ exports.usersRouter.delete('/:id', (req, res) => {
 // хотя методы post и put требую одинаковые объекты, все равно разделю на сущности, потому что put может отличаться от post, например можно отправить
 // не весь объект, который изменился, чтобы я тут искал изменения, а лишь принимать изменившиеся поля, тогда формы объектов put и post
 // будут очевидно отличаться
-exports.usersRouter.put('/:id', (req, res) => {
+exports.exmpUsersRouter.put('/:id', (req, res) => {
     const foundUser = db.users.find(user => user.id === req.params.id);
     if (!foundUser) {
         res.sendStatus(HTTP_Statuses.NOT_FOUND_404);

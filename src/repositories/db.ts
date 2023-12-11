@@ -2,8 +2,12 @@ import { MongoClient } from "mongodb";
 
 const mongoUri = process.env.mongoUri = "mongodb://0.0.0.0:27017";
 const client = new MongoClient(mongoUri);
-const db = client.db('testDB');
-export const usersCollection = db.collection('users')
+const testDB = client.db('testDB');
+export const exmpUsersCollection = testDB.collection('users')
+
+// users DB
+const usersDB = client.db('users');
+export const usersCollection = usersDB.collection('usersCollection')
 
 export async function runDb() {
     try {
@@ -11,6 +15,7 @@ export async function runDb() {
         //itk
         await client.connect();
         await client.db("testDB").command({ping:1})
+        await usersDB.command({ping:1})
         console.log('Connected to mongo server')
 
         // mongo

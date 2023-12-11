@@ -7,7 +7,7 @@ import { UserResViewModel } from '../model/UserResViewModel';
 import { UserUriIdString } from '../model/UserUriIdString';
 import { body, check } from 'express-validator';
 import { inputValidationMiddleware } from '../middleweres/inputValidationMiddleware';
-import { usersRepository } from '../repositories/usersRepository';
+import { usersRepository } from '../repositories/exmpUsersRepository';
 
 
 
@@ -44,9 +44,9 @@ const nameValidation = () => [
 ]
 // export const getUsersRoutes = () => {
 
-export const usersRouter = express.Router();
+export const exmpUsersRouter = express.Router();
 
-usersRouter.get('/',
+exmpUsersRouter.get('/',
     async (req: RequestWithQuery<UsersGetQueryModel>, res: Response<UserResViewModel[]>) => {
         // отсюда логику по работе с бд нужно вынести в отдельный слой - repositories
         // const foundUsers = await usersRepository.findProducts(req.query.specialty)
@@ -54,9 +54,10 @@ usersRouter.get('/',
         let foundUsers = await usersRepository.findUsers(req.query.specialty)
         //@ts-ignore
         res.json(foundUsers)
-        //todo in memory
+
+        //? in memory db
         // let foundUsers = db.users;
-        // // users?specialty=end; видимо, "end" будет query
+        // users?specialty=end; видимо, "end" будет query
         // if (req.query.specialty) {
         //     foundUsers = db.users.filter(user => user.specialty.indexOf(req.query.specialty) > -1) // стандартный поиск подстроки и возвращение объекта
         // }
@@ -64,23 +65,28 @@ usersRouter.get('/',
     })
 
 // id URI не типизирую - всегда строка. Потом все-таки типизировал, чтобы унифицировать 
-usersRouter.get('/:id', (req: RequestWithParams<UserUriIdString>, res: Response<UserResViewModel>) => { // работа с URI, теперь могу делать запрос на конкретный id 
+exmpUsersRouter.get('/:id', 
+    async (req: RequestWithParams<UserUriIdString>, res: Response<UserResViewModel>) => { // работа с URI, теперь могу делать запрос на конкретный id 
 
-    const foundUser = db.users.find(user => user.id === req.params.id)
+    const foundUser = await usersRepository.findUserById(req.params.id)
+
+
+    //? in memory db
+    // const foundUser = db.users.find(user => user.id === req.params.id)
     // в запросе я не вижу свойства params. Тогда, оно должно формироваться фреймворком исходя из эндпоинта?
 
     // согласно REST API, обрабатываем несуществующий эндпоинт - 404
-    if (!foundUser) {
-        res.sendStatus(HTTP_Statuses.NOT_FOUND_404);
-        return;
-    }
-
+    // if (!foundUser) {
+    //     res.sendStatus(HTTP_Statuses.NOT_FOUND_404);
+    //     return;
+    // }
+        //@ts-ignore
     res.json(foundUser)
 })
 
-usersRouter.post('/',
+exmpUsersRouter.post('/',
     nameValidation(), inputValidationMiddleware,
-    (req: RequestWithBody<UsersPostBodyModel>, res: Response<UserResViewModel>) => {
+    async (req: RequestWithBody<UsersPostBodyModel>, res: Response<UserResViewModel>) => {
 
         // валидация
         // if (!req.body.name || !req.body.specialty) {
@@ -88,21 +94,31 @@ usersRouter.post('/',
         //     return;
         // }
 
-        const newUser: User = {
-            id: crypto.randomUUID(),
-            name: req.body.name,
-            specialty: req.body.specialty
-        }
+        //? in memory request
+        // const newUser: User = {
+        //     id: crypto.randomUUID(),
+        //     name: req.body.name,
+        //     specialty: req.body.specialty
+        // }
+        // db.users.push(newUser)
 
-        db.users.push(newUser)
+        //? mongodb request
+        // const newUser = {
+        //     name: req.body.name,
+        //     specialty: 'not stated',
+        //     id: 'id from react'
+        // }
+        const newUser = await usersRepository.createUser(req.body.name);
 
         res
             .status(HTTP_Statuses.CREATED_201) // выдаю свой статус, не позволяя передавать его автоматически
             .json(newUser);
+
+        
     })
 
 // id URI не типизирую - всегда строка
-usersRouter.delete('/:id', (req: RequestWithParams<UserUriIdString>, res: Response) => {
+exmpUsersRouter.delete('/:id', (req: RequestWithParams<UserUriIdString>, res: Response) => {
 
     if (!db.users.find(user => user.id === req.params.id)) {
         res.sendStatus(HTTP_Statuses.NOT_FOUND_404);
@@ -117,7 +133,7 @@ usersRouter.delete('/:id', (req: RequestWithParams<UserUriIdString>, res: Respon
 // хотя методы post и put требую одинаковые объекты, все равно разделю на сущности, потому что put может отличаться от post, например можно отправить
 // не весь объект, который изменился, чтобы я тут искал изменения, а лишь принимать изменившиеся поля, тогда формы объектов put и post
 // будут очевидно отличаться
-usersRouter.put('/:id', (req: RequestWithParamsAndBody<UserUriIdString, UsersPutBodyModel>, res: Response) => {
+exmpUsersRouter.put('/:id', (req: RequestWithParamsAndBody<UserUriIdString, UsersPutBodyModel>, res: Response) => {
     const foundUser = db.users.find(user => user.id === req.params.id)
     if (!foundUser) {
         res.sendStatus(HTTP_Statuses.NOT_FOUND_404);
