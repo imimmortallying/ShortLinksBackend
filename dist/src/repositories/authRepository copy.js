@@ -12,25 +12,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRepository = void 0;
 const db_1 = require("./db");
 exports.authRepository = {
-    // не забыл ли я тут await?
     checkIsUserRegistred(username) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersCollection.find({ username: username }).toArray();
+            return db_1.usersCollection.find({ username: username }).toArray();
         });
     },
     findUserByUsername(username) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersCollection.find({ username: username }).toArray();
-        });
-    },
-    findUserById(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersCollection.find({ id: id }).toArray();
+            return db_1.usersCollection.find({ username: username }).toArray();
         });
     },
     createNewUser(newUser) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.usersCollection.insertOne(newUser);
+            db_1.usersCollection.insertOne(newUser);
             return newUser;
         });
     }

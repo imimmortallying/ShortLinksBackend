@@ -7,7 +7,8 @@ export const exmpUsersCollection = testDB.collection('users')
 
 // users DB
 const usersDB = client.db('users');
-export const usersCollection = usersDB.collection('usersCollection')
+export const usersCollection = usersDB.collection('usersCollection');
+export const usersTokenCollection = usersDB.collection('usersTokenCollection');
 
 export async function runDb() {
     try {

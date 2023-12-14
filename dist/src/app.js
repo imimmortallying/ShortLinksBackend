@@ -8,11 +8,16 @@ exports.app = void 0;
 const express_1 = __importDefault(require("express"));
 const exmpUsersRouter_1 = require("./routes/exmpUsersRouter");
 const authRouter_1 = require("./routes/authRouter");
-const cors = require("cors"); // !middleware для избежания cors ошибки. С cors разобраться позже!
 exports.app = (0, express_1.default)(); // экспорт для передачи в тест
+const cors = require("cors"); // !middleware для избежания cors ошибки. С cors разобраться позже!
+const cookieParser = require('cookie-parser');
 // parsing middleware, применяется при получении каждого запроса:
 const jsonBodyMiddleware = express_1.default.json();
 exports.app.use(jsonBodyMiddleware);
-exports.app.use(cors());
+exports.app.use(cookieParser());
+exports.app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:4000'
+}));
 exports.app.use("/users", exmpUsersRouter_1.exmpUsersRouter);
-exports.app.use("/auth", authRouter_1.authRouter);
+exports.app.use("/api", authRouter_1.authRouter);
