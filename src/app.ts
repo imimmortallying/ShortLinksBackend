@@ -1,6 +1,6 @@
 // const express = require('express');
 import express from 'express';
-import { exmpUsersRouter } from './routes/exmpUsersRouter';
+import { linksRouter } from './routes/linksRouter';
 import { authRouter } from './routes/authRouter';
 
 export const app = express(); // экспорт для передачи в тест
@@ -20,7 +20,7 @@ app.use(cors({
 }));
 
 
-app.use("/users", exmpUsersRouter);
+app.use("/", linksRouter);
 app.use("/api", authRouter);
 
 

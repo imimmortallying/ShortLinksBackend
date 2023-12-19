@@ -10,7 +10,7 @@ interface tokenPayload {
 
 class TokenService {
     generateTokens(payload:tokenPayload) {
-        const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, {expiresIn:'15m'});
+        const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, {expiresIn:'30m'});
         const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {expiresIn:'30d'});
         return {
             accessToken,

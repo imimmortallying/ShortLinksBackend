@@ -99,7 +99,7 @@ exports.authRouter.get('/refresh',
     try {
         const { refreshToken } = req.cookies;
         if (!refreshToken) {
-            res.json({ message: 'refresh, пользователь не авторизован, пустые cookie' });
+            return res.json({ message: 'refresh, пользователь не авторизован, пустые cookie' });
         }
         const userData = tokenService.validateRefreshToken(refreshToken);
         // console.log('ищет по токену', refreshToken)
@@ -108,7 +108,7 @@ exports.authRouter.get('/refresh',
         // если рефреш токен не прошел валидацию, значит истек его срок. Если токен не найден, значит не авторизован?
         // в любом случае необходима авторизация. Должен ли я в этот момент загрузить клиенту /login?
         if (!userData || !tokenFromDB) {
-            res.json({ message: 'refresh, пользователь не авторизован' });
+            return res.json({ message: 'refresh, пользователь не авторизован' });
         }
         // нахожу юзера в бд при помощи ID, которое достаю из токена. Если в бд автоматически что-то изменилось, например username,
         // то я это новое содержимое запишу в токен
@@ -117,7 +117,7 @@ exports.authRouter.get('/refresh',
         const tokens = tokenService.generateTokens({ id: userData.id, username: foundUser[0].username });
         yield tokenService.saveRefreshTokenInDB(userData.id, tokens.refreshToken);
         res.cookie('refreshToken', tokens.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
-        return res.json({ accessToken: tokens.accessToken, id: userData.id });
+        return res.json({ accessToken: tokens.accessToken, username: userData.username });
     }
     catch (e) {
         console.log('ошибка при refresh', e);
@@ -142,25 +142,20 @@ exports.authRouter.post('/login', nameValidation(), passwordValidation(), inputV
         yield tokenService.saveRefreshTokenInDB(foundUser[0].id, tokens.refreshToken);
         // сохранение рефреш токена в куки на 30 дней - срок как у самого токена
         res.cookie('refreshToken', tokens.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
-        res.json({ accessToken: tokens.accessToken, userid: foundUser[0].id });
+        res.json({ accessToken: tokens.accessToken, username: foundUser[0].username });
     }
     catch (e) {
         console.log(e);
         res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "login error" });
     }
 }));
-//обновление токена
-// authRouter.post('/refresh')
 // для проверки доступа анонимного/зарег пользователей
 exports.authRouter.get('/links', authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.json('links');
+        res.json({ links: 'links' });
     }
     catch (e) {
         console.log(e);
         res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "some error" });
     }
 }));
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE4NDE5NjUwLWZjZjMtNGNkYy05Nzc3LTRmNjg3MGRlNmYxYyIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MDI1MzIzNTksImV4cCI6MTcwNTEyNDM1OX0.PgCE3k1f_T5tPvfR1uwLn25RDo31J8YpqjJ4OfKlY4g
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE4NDE5NjUwLWZjZjMtNGNkYy05Nzc3LTRmNjg3MGRlNmYxYyIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MDI1MzIzNTksImV4cCI6MTcwNTEyNDM1OX0.PgCE3k1f_T5tPvfR1uwLn25RDo31J8YpqjJ4OfKlY4g
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE4NDE5NjUwLWZjZjMtNGNkYy05Nzc3LTRmNjg3MGRlNmYxYyIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MDI1MzI1MDIsImV4cCI6MTcwNTEyNDUwMn0.B7AhodllG-Rp9zHYqlKO2-qSwUmvH_c48IVeVvgMO5A
