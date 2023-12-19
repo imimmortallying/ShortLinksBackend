@@ -10,6 +10,7 @@ const usersDB = client.db('users');
 export const usersCollection = usersDB.collection('usersCollection');
 export const usersTokenCollection = usersDB.collection('usersTokenCollection');
 export const usersLinksCollection = usersDB.collection('usersLinksCollection');
+export const anonUsersLinksCollection = usersDB.collection('anonUsersLinksCollection');
 
 export async function runDb() {
     try {
