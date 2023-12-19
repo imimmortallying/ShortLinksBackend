@@ -10,6 +10,7 @@ import { inputValidationMiddleware } from '../middleweres/inputValidationMiddlew
 import { usersRepository } from '../repositories/exmpUsersRepository';
 import { usersLinksRepository } from '../repositories/usersLinksRepository';
 import { authMiddleware } from '../middleweres/authMiddleware';
+import { anonUsersLinksRepository } from '../repositories/anonUsersLinksRepository';
 
 
 
@@ -47,6 +48,7 @@ linksRouter.post('/sendLink',
 
         // достать строку из запроса
         // валидация токенов
+        // или валидация фингерпринта
         // достать id юзера из локал стора или из куки?
         // по этому id сделать запрос в бд на другом слое
         try {
@@ -60,8 +62,9 @@ linksRouter.post('/sendLink',
 
             // если пользователь анонимный, то пушу ссылку в другую коллекцию
             if (authOrAnon === 'anon'){
-                const {userFingerprint} = req.body
-                return res.json({message:'аноним'})
+                const {fingerprint} = req.body;
+                const newLinkInDB = await anonUsersLinksRepository.pushLink(fingerprint, link);
+                return res.json({message:'ссылка добавлена в массив анонимного пользователя'})
             }
             // console.log('userid:', userid)
             // тут я должен проверить, анонимный пользователь отправил ссылку или нет. В зависимости от этого либо в один либо в др репоз

@@ -17,6 +17,7 @@ const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
 const usersLinksRepository_1 = require("../repositories/usersLinksRepository");
 const authMiddleware_1 = require("../middleweres/authMiddleware");
+const anonUsersLinksRepository_1 = require("../repositories/anonUsersLinksRepository");
 var HTTP_Statuses;
 (function (HTTP_Statuses) {
     HTTP_Statuses[HTTP_Statuses["OK_200"] = 200] = "OK_200";
@@ -39,6 +40,7 @@ exports.linksRouter.post('/sendLink',
 authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // достать строку из запроса
     // валидация токенов
+    // или валидация фингерпринта
     // достать id юзера из локал стора или из куки?
     // по этому id сделать запрос в бд на другом слое
     try {
@@ -51,8 +53,9 @@ authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0,
         }
         // если пользователь анонимный, то пушу ссылку в другую коллекцию
         if (authOrAnon === 'anon') {
-            const { userFingerprint } = req.body;
-            return res.json({ message: 'аноним' });
+            const { fingerprint } = req.body;
+            const newLinkInDB = yield anonUsersLinksRepository_1.anonUsersLinksRepository.pushLink(fingerprint, link);
+            return res.json({ message: 'ссылка добавлена в массив анонимного пользователя' });
         }
         // console.log('userid:', userid)
         // тут я должен проверить, анонимный пользователь отправил ссылку или нет. В зависимости от этого либо в один либо в др репоз
