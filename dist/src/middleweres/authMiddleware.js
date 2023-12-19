@@ -7,6 +7,12 @@ const tokenService = require('../services/tokenService');
 const authMiddleware = (req, res, next) => {
     var _a;
     try {
+        // проверка анонимности или авторизованности. т.к. у анонима нет токенов
+        const { authOrAnon } = req.body;
+        if (authOrAnon === 'anon') {
+            next();
+            return;
+        }
         const accessToken = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
         if (!accessToken) {
             return res.status(401).json({ message: "no access token - пользователь не авторизован" });
@@ -18,7 +24,7 @@ const authMiddleware = (req, res, next) => {
         }
         //добавляю новое поле в req.body
         req.body.user = decodedData;
-        next();
+        return next();
     }
     catch (e) {
         console.log(e);

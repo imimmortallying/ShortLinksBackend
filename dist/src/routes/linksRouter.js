@@ -42,13 +42,21 @@ authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0,
     // достать id юзера из локал стора или из куки?
     // по этому id сделать запрос в бд на другом слое
     try {
-        const { link } = req.body;
-        console.log(link);
-        const userid = req.body.user.id;
-        console.log('userid:', userid);
+        const { link, authOrAnon } = req.body;
+        console.log('isAuth: ', authOrAnon);
+        if (authOrAnon === 'auth') {
+            const userid = req.body.user.id;
+            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(userid, link);
+            return res.status(HTTP_Statuses.OK_200).json({ message: 'ссылка добавлена в массив' });
+        }
+        // если пользователь анонимный, то пушу ссылку в другую коллекцию
+        if (authOrAnon === 'anon') {
+            const { userFingerprint } = req.body;
+            return res.json({ message: 'аноним' });
+        }
+        // console.log('userid:', userid)
         // тут я должен проверить, анонимный пользователь отправил ссылку или нет. В зависимости от этого либо в один либо в др репоз
-        const isUserRegistred = yield usersLinksRepository_1.usersLinksRepository.pushLink(userid, link);
-        res.json('Пользователь успешно зарегистрирован');
+        res.json('не понятно, анонимный или авторизованный пользователь');
     }
     catch (e) {
         console.log(e);
