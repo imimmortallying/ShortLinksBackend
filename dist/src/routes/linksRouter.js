@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.linksRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
+const inputValidationMiddleware_1 = require("../middleweres/inputValidationMiddleware");
 const usersLinksRepository_1 = require("../repositories/usersLinksRepository");
 const authMiddleware_1 = require("../middleweres/authMiddleware");
 var HTTP_Statuses;
@@ -26,16 +27,13 @@ var HTTP_Statuses;
     HTTP_Statuses[HTTP_Statuses["NOT_FOUND_404"] = 404] = "NOT_FOUND_404";
 })(HTTP_Statuses || (HTTP_Statuses = {}));
 //! ошибки добавляются в массив, проверка работает корректно, но, если не указано name поле, то вернет сразу обе ошибки
-// как вернуть только 1 и нужно ли?
-const nameValidation = () => [
-    (0, express_validator_1.body)('name').trim().not().isEmpty().withMessage('Name fields is required'),
-    (0, express_validator_1.body)('name').trim().isLength({ min: 3, max: 10 }).withMessage('Name length should be from 3 to 10 characters')
+const linkValidation = () => [
+    (0, express_validator_1.body)('link').trim().not().isEmpty().withMessage('link field is required'),
+    (0, express_validator_1.body)('link').trim().isURL().withMessage('incorrect URL'),
 ];
 // export const getUsersRoutes = () => {
 exports.linksRouter = express_1.default.Router();
-exports.linksRouter.post('/api/sendLink', 
-// добавить валидацию инпута - URL
-authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.linksRouter.post('/api/sendLink', linkValidation(), inputValidationMiddleware_1.inputValidationMiddleware, authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // достать строку из запроса
     // валидация токенов
     // или валидация фингерпринта
@@ -64,7 +62,7 @@ authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0,
         res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "registration error" });
     }
 }));
-exports.linksRouter.get('/redirect', 
+exports.linksRouter.post('/redirect', 
 // в дальнейшем достать айпи, откуда переход
 // добавить +1 count
 // мидлваре?
@@ -78,10 +76,10 @@ exports.linksRouter.get('/redirect',
 // если нет, то какая-то ошибка, которая на фронте отобразит, что такой ссылки нет
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req.body);
+        console.log(req);
         const { alias } = req.body;
         const foundLink = yield usersLinksRepository_1.usersLinksRepository.findOriginalLink(alias);
-        console.log(foundLink);
+        // console.log(foundLink)
         return res.json({ foundLink });
     }
     catch (e) {

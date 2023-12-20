@@ -30,10 +30,9 @@ enum HTTP_Statuses {
 
 
 //! ошибки добавляются в массив, проверка работает корректно, но, если не указано name поле, то вернет сразу обе ошибки
-// как вернуть только 1 и нужно ли?
-const nameValidation = () => [
-    body('name').trim().not().isEmpty().withMessage('Name fields is required'),
-    body('name').trim().isLength({ min: 3, max: 10 }).withMessage('Name length should be from 3 to 10 characters')
+const linkValidation = () => [
+    body('link').trim().not().isEmpty().withMessage('link field is required'),
+    body('link').trim().isURL().withMessage('incorrect URL'),
 ]
 // export const getUsersRoutes = () => {
 
@@ -41,8 +40,8 @@ export const linksRouter = express.Router();
 
 
 linksRouter.post('/api/sendLink',
-    // добавить валидацию инпута - URL
-    authMiddleware,
+    linkValidation(), inputValidationMiddleware,
+    authMiddleware, 
     async (req: Request, res: Response) => {
 
         // достать строку из запроса
@@ -76,7 +75,7 @@ linksRouter.post('/api/sendLink',
         }
     })
 
-linksRouter.get('/redirect',
+linksRouter.post('/redirect',
 // в дальнейшем достать айпи, откуда переход
 // добавить +1 count
 // мидлваре?
@@ -92,10 +91,10 @@ linksRouter.get('/redirect',
 // если нет, то какая-то ошибка, которая на фронте отобразит, что такой ссылки нет
 async (req: Request, res: Response) => {
     try {
-        console.log(req.body)
+        console.log(req)
         const {alias} = req.body;
         const foundLink = await usersLinksRepository.findOriginalLink(alias);
-        console.log(foundLink)
+        // console.log(foundLink)
         return res.json({foundLink});
     } catch (e) {
         console.log(e)

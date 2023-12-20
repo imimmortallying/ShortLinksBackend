@@ -42,7 +42,7 @@ enum HTTP_Statuses {
 
 const nameValidation = () => [
     body('username').trim().not().isEmpty().withMessage('Username field is required'),
-    body('username').trim().isLength({ min: 3, max: 10 }).withMessage('Username length should be from 3 to 10 characters')
+    body('username').trim().isLength({ min: 3, max: 10 }).withMessage('Username length should be from 3 to 10 characters'),
 ]
 
 const passwordValidation = () => [
