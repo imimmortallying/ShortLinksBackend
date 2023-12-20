@@ -55,14 +55,14 @@ linksRouter.post('/api/sendLink',
             console.log('isAuth: ', authOrAnon);
             if (authOrAnon === 'auth') {
                 const userid = req.body.user.id;
-                const newLinkInDB = await usersLinksRepository.pushAuthLink(userid, link);
+                const newLinkInDB = await usersLinksRepository.pushLink(userid, link);
                 return res.status(HTTP_Statuses.OK_200).json({ message: 'ссылка добавлена в массив' })
             }
 
             // если пользователь анонимный, то пушу ссылку в другую коллекцию
             if (authOrAnon === 'anon') {
                 const { fingerprint } = req.body;
-                const newLinkInDB = await usersLinksRepository.pushAnonLink(fingerprint, link);
+                const newLinkInDB = await usersLinksRepository.pushLink(fingerprint, link);
                 return res.json({ message: 'ссылка добавлена в массив анонимного пользователя' })
             }
             // console.log('userid:', userid)

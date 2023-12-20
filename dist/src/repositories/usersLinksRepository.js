@@ -12,14 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersLinksRepository = void 0;
 const db_1 = require("./db");
 exports.usersLinksRepository = {
-    pushAuthLink(userid, link) {
+    pushLink(owner, link) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersLinksCollection.updateOne({ "id": userid }, { $addToSet: { "links": link } }, { upsert: true });
-        });
-    },
-    pushAnonLink(fingerprint, link) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersLinksCollection.updateOne({ "fingerprint": fingerprint }, { $addToSet: { "links": link } }, { upsert: true });
+            // owner - либо ID залогиненого пользователя, либо finger анонимного
+            return yield db_1.usersLinksCollection.updateOne({ "owner": owner }, { $addToSet: { "links": link } }, { upsert: true });
         });
     },
 };

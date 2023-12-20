@@ -3,17 +3,10 @@ import { usersLinksCollection } from "./db";
 
 export const usersLinksRepository = {
 
-    async pushAuthLink(userid: string, link: string) {
+    async pushLink(owner: string, link: string) {
+        // owner - либо ID залогиненого пользователя, либо finger анонимного
         return await usersLinksCollection.updateOne(
-            { "id": userid },
-            { $addToSet: { "links": link } },
-            { upsert: true }
-        );
-    },
-
-    async pushAnonLink(fingerprint: string, link: string) {
-        return await usersLinksCollection.updateOne(
-            { "fingerprint": fingerprint },
+            { "owner": owner },
             { $addToSet: { "links": link } },
             { upsert: true }
         );

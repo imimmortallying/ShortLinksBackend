@@ -46,13 +46,13 @@ authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0,
         console.log('isAuth: ', authOrAnon);
         if (authOrAnon === 'auth') {
             const userid = req.body.user.id;
-            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushAuthLink(userid, link);
+            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(userid, link);
             return res.status(HTTP_Statuses.OK_200).json({ message: 'ссылка добавлена в массив' });
         }
         // если пользователь анонимный, то пушу ссылку в другую коллекцию
         if (authOrAnon === 'anon') {
             const { fingerprint } = req.body;
-            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushAnonLink(fingerprint, link);
+            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(fingerprint, link);
             return res.json({ message: 'ссылка добавлена в массив анонимного пользователя' });
         }
         // console.log('userid:', userid)
