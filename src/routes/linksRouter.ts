@@ -63,7 +63,7 @@ linksRouter.post('/api/sendLink',
             if (authOrAnon === 'anon') {
                 const { fingerprint } = req.body;
                 const newLinkInDB = await usersLinksRepository.pushLink(fingerprint, link);
-                return res.json({ message: 'ссылка добавлена в массив анонимного пользователя' })
+                return res.status(HTTP_Statuses.OK_200).json({ message: 'ссылка добавлена в массив анонимного пользователя' })
             }
             // console.log('userid:', userid)
             // тут я должен проверить, анонимный пользователь отправил ссылку или нет. В зависимости от этого либо в один либо в др репоз
@@ -94,8 +94,9 @@ async (req: Request, res: Response) => {
     try {
         console.log(req.body)
         const {alias} = req.body;
-
-        return res.json({message: alias});
+        const foundLink = await usersLinksRepository.findOriginalLink(alias);
+        console.log(foundLink)
+        return res.json({foundLink});
     } catch (e) {
         console.log(e)
         res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "id link error" })

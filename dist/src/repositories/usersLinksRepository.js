@@ -15,7 +15,15 @@ exports.usersLinksRepository = {
     pushLink(owner, link) {
         return __awaiter(this, void 0, void 0, function* () {
             // owner - либо ID залогиненого пользователя, либо finger анонимного
+            // переделать структуру запроса, но не удаляй.
+            // Потому что похожый запрос будет при добавлении ip источника перехода в массиве, внутри объекта ссылки
             return yield db_1.usersLinksCollection.updateOne({ "owner": owner }, { $addToSet: { "links": link } }, { upsert: true });
         });
     },
+    findOriginalLink(alias) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const foundOriginalLink = yield db_1.usersLinksCollection.findOne({ alias: alias });
+            return foundOriginalLink === null || foundOriginalLink === void 0 ? void 0 : foundOriginalLink.original;
+        });
+    }
 };

@@ -53,7 +53,7 @@ authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0,
         if (authOrAnon === 'anon') {
             const { fingerprint } = req.body;
             const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(fingerprint, link);
-            return res.json({ message: 'ссылка добавлена в массив анонимного пользователя' });
+            return res.status(HTTP_Statuses.OK_200).json({ message: 'ссылка добавлена в массив анонимного пользователя' });
         }
         // console.log('userid:', userid)
         // тут я должен проверить, анонимный пользователь отправил ссылку или нет. В зависимости от этого либо в один либо в др репоз
@@ -80,7 +80,9 @@ exports.linksRouter.get('/redirect',
     try {
         console.log(req.body);
         const { alias } = req.body;
-        return res.json({ message: alias });
+        const foundLink = yield usersLinksRepository_1.usersLinksRepository.findOriginalLink(alias);
+        console.log(foundLink);
+        return res.json({ foundLink });
     }
     catch (e) {
         console.log(e);
