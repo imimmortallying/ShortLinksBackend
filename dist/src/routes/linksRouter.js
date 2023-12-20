@@ -17,7 +17,6 @@ const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
 const usersLinksRepository_1 = require("../repositories/usersLinksRepository");
 const authMiddleware_1 = require("../middleweres/authMiddleware");
-const anonUsersLinksRepository_1 = require("../repositories/anonUsersLinksRepository");
 var HTTP_Statuses;
 (function (HTTP_Statuses) {
     HTTP_Statuses[HTTP_Statuses["OK_200"] = 200] = "OK_200";
@@ -34,8 +33,7 @@ const nameValidation = () => [
 ];
 // export const getUsersRoutes = () => {
 exports.linksRouter = express_1.default.Router();
-// id URI не типизирую - всегда строка. Потом все-таки типизировал, чтобы унифицировать 
-exports.linksRouter.post('/sendLink', 
+exports.linksRouter.post('/api/sendLink', 
 // добавить валидацию инпута - URL
 authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // достать строку из запроса
@@ -48,13 +46,13 @@ authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0,
         console.log('isAuth: ', authOrAnon);
         if (authOrAnon === 'auth') {
             const userid = req.body.user.id;
-            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(userid, link);
+            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushAuthLink(userid, link);
             return res.status(HTTP_Statuses.OK_200).json({ message: 'ссылка добавлена в массив' });
         }
         // если пользователь анонимный, то пушу ссылку в другую коллекцию
         if (authOrAnon === 'anon') {
             const { fingerprint } = req.body;
-            const newLinkInDB = yield anonUsersLinksRepository_1.anonUsersLinksRepository.pushLink(fingerprint, link);
+            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushAnonLink(fingerprint, link);
             return res.json({ message: 'ссылка добавлена в массив анонимного пользователя' });
         }
         // console.log('userid:', userid)
@@ -66,4 +64,26 @@ authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0,
         res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "registration error" });
     }
 }));
-exports.linksRouter.get('/allLinks');
+exports.linksRouter.get('/redirect', 
+// в дальнейшем достать айпи, откуда переход
+// добавить +1 count
+// мидлваре?
+// т.к. бд организована не оптимально, то, чтобы не проводить поиск каждого alias при переходе,
+// в каждой из 2-х коллекций - анонимных и авториз. пользователей,
+// при создании alias добавь символ 'a'(anon) или 'l'(logined) в начало alias, чтобы 
+// в этом месте проверить наличие этого символа и сделать поиск по 1 из 2 коллекий в бд
+// достать alias
+// сделать поиск в бд
+// вернуть полную ссылку если нашлась
+// если нет, то какая-то ошибка, которая на фронте отобразит, что такой ссылки нет
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log(req.body);
+        const { alias } = req.body;
+        return res.json({ message: alias });
+    }
+    catch (e) {
+        console.log(e);
+        res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "id link error" });
+    }
+}));

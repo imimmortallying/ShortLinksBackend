@@ -10,7 +10,6 @@ import { inputValidationMiddleware } from '../middleweres/inputValidationMiddlew
 import { usersRepository } from '../repositories/exmpUsersRepository';
 import { usersLinksRepository } from '../repositories/usersLinksRepository';
 import { authMiddleware } from '../middleweres/authMiddleware';
-import { anonUsersLinksRepository } from '../repositories/anonUsersLinksRepository';
 
 
 
@@ -40,8 +39,8 @@ const nameValidation = () => [
 
 export const linksRouter = express.Router();
 
-// id URI не типизирую - всегда строка. Потом все-таки типизировал, чтобы унифицировать 
-linksRouter.post('/sendLink',
+
+linksRouter.post('/api/sendLink',
     // добавить валидацию инпута - URL
     authMiddleware,
     async (req: Request, res: Response) => {
@@ -56,15 +55,15 @@ linksRouter.post('/sendLink',
             console.log('isAuth: ', authOrAnon);
             if (authOrAnon === 'auth') {
                 const userid = req.body.user.id;
-                const newLinkInDB = await usersLinksRepository.pushLink(userid, link);
-                return res.status(HTTP_Statuses.OK_200).json({message: 'ссылка добавлена в массив'})
+                const newLinkInDB = await usersLinksRepository.pushAuthLink(userid, link);
+                return res.status(HTTP_Statuses.OK_200).json({ message: 'ссылка добавлена в массив' })
             }
 
             // если пользователь анонимный, то пушу ссылку в другую коллекцию
-            if (authOrAnon === 'anon'){
-                const {fingerprint} = req.body;
-                const newLinkInDB = await anonUsersLinksRepository.pushLink(fingerprint, link);
-                return res.json({message:'ссылка добавлена в массив анонимного пользователя'})
+            if (authOrAnon === 'anon') {
+                const { fingerprint } = req.body;
+                const newLinkInDB = await usersLinksRepository.pushAnonLink(fingerprint, link);
+                return res.json({ message: 'ссылка добавлена в массив анонимного пользователя' })
             }
             // console.log('userid:', userid)
             // тут я должен проверить, анонимный пользователь отправил ссылку или нет. В зависимости от этого либо в один либо в др репоз
@@ -77,7 +76,29 @@ linksRouter.post('/sendLink',
         }
     })
 
-linksRouter.get('/allLinks',
+linksRouter.get('/redirect',
+// в дальнейшем достать айпи, откуда переход
+// добавить +1 count
+// мидлваре?
 
+// т.к. бд организована не оптимально, то, чтобы не проводить поиск каждого alias при переходе,
+// в каждой из 2-х коллекций - анонимных и авториз. пользователей,
+// при создании alias добавь символ 'a'(anon) или 'l'(logined) в начало alias, чтобы 
+// в этом месте проверить наличие этого символа и сделать поиск по 1 из 2 коллекий в бд
+
+// достать alias
+// сделать поиск в бд
+// вернуть полную ссылку если нашлась
+// если нет, то какая-то ошибка, которая на фронте отобразит, что такой ссылки нет
+async (req: Request, res: Response) => {
+    try {
+        console.log(req.body)
+        const {alias} = req.body;
+
+        return res.json({message: alias});
+    } catch (e) {
+        console.log(e)
+        res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "id link error" })
+    }
+}
 )
-
