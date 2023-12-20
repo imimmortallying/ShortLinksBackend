@@ -41,7 +41,7 @@ var HTTP_Statuses;
 })(HTTP_Statuses || (HTTP_Statuses = {}));
 const nameValidation = () => [
     (0, express_validator_1.body)('username').trim().not().isEmpty().withMessage('Username field is required'),
-    (0, express_validator_1.body)('username').trim().isLength({ min: 3, max: 10 }).withMessage('Username length should be from 3 to 10 characters')
+    (0, express_validator_1.body)('username').trim().isLength({ min: 3, max: 10 }).withMessage('Username length should be from 3 to 10 characters'),
 ];
 const passwordValidation = () => [
     (0, express_validator_1.body)('password').trim().not().isEmpty().withMessage('Password field is required'),

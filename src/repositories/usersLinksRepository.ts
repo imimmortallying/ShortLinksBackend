@@ -8,11 +8,12 @@ export const usersLinksRepository = {
 
         // переделать структуру запроса, но не удаляй.
         // Потому что похожый запрос будет при добавлении ip источника перехода в массиве, внутри объекта ссылки
-        return await usersLinksCollection.updateOne(
-            { "owner": owner },
-            { $addToSet: { "links": link } },
-            { upsert: true }
-        );
+        return await usersLinksCollection.insertOne({
+            "owner": owner,
+            "original": link,
+            "alias": "short",
+            "count": 0
+        })
     },
 
     async findOriginalLink(alias: string) {

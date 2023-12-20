@@ -17,7 +17,12 @@ exports.usersLinksRepository = {
             // owner - либо ID залогиненого пользователя, либо finger анонимного
             // переделать структуру запроса, но не удаляй.
             // Потому что похожый запрос будет при добавлении ip источника перехода в массиве, внутри объекта ссылки
-            return yield db_1.usersLinksCollection.updateOne({ "owner": owner }, { $addToSet: { "links": link } }, { upsert: true });
+            return yield db_1.usersLinksCollection.insertOne({
+                "owner": owner,
+                "original": link,
+                "alias": "short",
+                "count": 0
+            });
         });
     },
     findOriginalLink(alias) {
