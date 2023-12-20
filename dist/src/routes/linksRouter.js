@@ -33,15 +33,40 @@ const linkValidation = () => [
 ];
 // export const getUsersRoutes = () => {
 exports.linksRouter = express_1.default.Router();
+// этой функции тут не место, вынести при рефакторинге
+// потенциально, если в бд будут заняты все alias, то функция зациклится
+function generateRandomString(length) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let result = '';
+        let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        let hasAlias = yield usersLinksRepository_1.usersLinksRepository.hasAliasAlready(result);
+        if (hasAlias) {
+            result = yield generateRandomString(5);
+        }
+        return result;
+    });
+}
 exports.linksRouter.post('/api/sendLink', linkValidation(), inputValidationMiddleware_1.inputValidationMiddleware, authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // достать строку из запроса
     // валидация токенов
     // или валидация фингерпринта
     // достать id юзера из локал стора или из куки?
     // по этому id сделать запрос в бд на другом слое
+    // необходимо сначала проверить наличие самой ссылки в бд. Если нет, то создать alias
+    // alias опять проверить на наличие в бд. Если такого alias нет, то уже отправить
     try {
         const { link, authOrAnon } = req.body;
-        console.log('isAuth: ', authOrAnon);
+        // проверка наличия ссылки в бд
+        const hasLink = yield usersLinksRepository_1.usersLinksRepository.hasLinkAlready(link);
+        if (hasLink) {
+            return res.json({ message: 'такая ссылка уже есть в бд' });
+        }
+        let alias = yield generateRandomString(5);
+        console.log(alias);
         if (authOrAnon === 'auth') {
             const userid = req.body.user.id;
             const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(userid, link);

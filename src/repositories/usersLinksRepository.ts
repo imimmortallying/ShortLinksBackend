@@ -19,6 +19,16 @@ export const usersLinksRepository = {
     async findOriginalLink(alias: string) {
         const foundOriginalLink = await usersLinksCollection.findOne({alias:alias});
         return foundOriginalLink?.original
-    }
+    },
+
+    async hasLinkAlready (link:string) {
+        const hasLink = await usersLinksCollection.findOne({original: link})
+        return hasLink ? true : false;
+    },
+
+    async hasAliasAlready (alias:string) {
+        const hasAlias = await usersLinksCollection.findOne({original: alias})
+        return hasAlias ? true : false;
+    },
 
 }

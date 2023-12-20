@@ -38,6 +38,24 @@ const linkValidation = () => [
 
 export const linksRouter = express.Router();
 
+// этой функции тут не место, вынести при рефакторинге
+// потенциально, если в бд будут заняты все alias, то функция зациклится
+async function generateRandomString(length:number) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    let hasAlias = await usersLinksRepository.hasAliasAlready(result);
+    if (hasAlias){
+        result = await generateRandomString(5);
+    }
+
+    return result;
+}
+
 
 linksRouter.post('/api/sendLink',
     linkValidation(), inputValidationMiddleware,
@@ -49,9 +67,20 @@ linksRouter.post('/api/sendLink',
         // или валидация фингерпринта
         // достать id юзера из локал стора или из куки?
         // по этому id сделать запрос в бд на другом слое
+
+        // необходимо сначала проверить наличие самой ссылки в бд. Если нет, то создать alias
+        // alias опять проверить на наличие в бд. Если такого alias нет, то уже отправить
         try {
             const { link, authOrAnon } = req.body;
-            console.log('isAuth: ', authOrAnon);
+            
+            // проверка наличия ссылки в бд
+            const hasLink = await usersLinksRepository.hasLinkAlready(link);
+            if (hasLink) {
+                return res.json({message: 'такая ссылка уже есть в бд'})
+            }
+            let alias = await generateRandomString(5);
+            console.log(alias);
+
             if (authOrAnon === 'auth') {
                 const userid = req.body.user.id;
                 const newLinkInDB = await usersLinksRepository.pushLink(userid, link);

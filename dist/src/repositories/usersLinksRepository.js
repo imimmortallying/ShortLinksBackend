@@ -30,5 +30,17 @@ exports.usersLinksRepository = {
             const foundOriginalLink = yield db_1.usersLinksCollection.findOne({ alias: alias });
             return foundOriginalLink === null || foundOriginalLink === void 0 ? void 0 : foundOriginalLink.original;
         });
-    }
+    },
+    hasLinkAlready(link) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const hasLink = yield db_1.usersLinksCollection.findOne({ original: link });
+            return hasLink ? true : false;
+        });
+    },
+    hasAliasAlready(alias) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const hasAlias = yield db_1.usersLinksCollection.findOne({ original: alias });
+            return hasAlias ? true : false;
+        });
+    },
 };
