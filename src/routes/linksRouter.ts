@@ -129,3 +129,20 @@ async (req: Request, res: Response) => {
     }
 }
 )
+
+linksRouter.get('/allUsersLinks',
+authMiddleware, 
+async (req: Request, res: Response) => {
+    try {
+        const userid = req.body.user.id;
+        const foundLinks = await usersLinksRepository.findAllUsersLinks(userid);
+        // console.log(foundLink)
+        return res.json({foundLinks});
+    } catch (e) {
+        console.log(e)
+        res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "id link error" })
+    }
+}
+)
+
+linksRouter.get('/allLinks', )

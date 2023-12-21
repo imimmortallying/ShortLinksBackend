@@ -33,4 +33,9 @@ export const usersLinksRepository = {
         return hasAlias ? true : false;
     },
 
+    async findAllUsersLinks (userid:string) {
+        const foundAllUsersLinks = await usersLinksCollection.find( {owner:userid}, {projection: {_id:0, owner:0, original:0, count:0}}).toArray()
+        return foundAllUsersLinks;
+    }
+
 }

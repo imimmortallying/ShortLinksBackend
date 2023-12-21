@@ -43,4 +43,10 @@ exports.usersLinksRepository = {
             return hasAlias ? true : false;
         });
     },
+    findAllUsersLinks(userid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const foundAllUsersLinks = yield db_1.usersLinksCollection.find({ owner: userid }, { projection: { _id: 0, owner: 0, original: 0, count: 0 } }).toArray();
+            return foundAllUsersLinks;
+        });
+    }
 };

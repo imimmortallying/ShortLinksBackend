@@ -110,3 +110,16 @@ exports.linksRouter.post('/redirect',
         res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "id link error" });
     }
 }));
+exports.linksRouter.get('/allUsersLinks', authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userid = req.body.user.id;
+        const foundLinks = yield usersLinksRepository_1.usersLinksRepository.findAllUsersLinks(userid);
+        // console.log(foundLink)
+        return res.json({ foundLinks });
+    }
+    catch (e) {
+        console.log(e);
+        res.status(HTTP_Statuses.BAD_REQUEST_400).json({ message: "id link error" });
+    }
+}));
+exports.linksRouter.get('/allLinks');
