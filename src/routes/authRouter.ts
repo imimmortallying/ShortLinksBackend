@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../../types/types';
+import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../core/types/types';
 import { UsersPostBodyModel } from '../model/UsersPostBodyModel';
 import { body, check } from 'express-validator';
 import { inputValidationMiddleware } from '../middleweres/inputValidationMiddleware';
