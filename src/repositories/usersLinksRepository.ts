@@ -3,7 +3,7 @@ import { usersLinksCollection } from "./db";
 
 export const usersLinksRepository = {
 
-    async pushLink(owner: string, link: string) {
+    async pushLink(owner: string, link: string, alias: string) {
         // owner - либо ID залогиненого пользователя, либо finger анонимного
 
         // переделать структуру запроса, но не удаляй.
@@ -11,9 +11,11 @@ export const usersLinksRepository = {
         return await usersLinksCollection.insertOne({
             "owner": owner,
             "original": link,
-            "alias": "short",
+            "alias": alias,
             "count": 0
         })
+
+ 
     },
 
     async findOriginalLink(alias: string) {
@@ -22,8 +24,8 @@ export const usersLinksRepository = {
     },
 
     async hasLinkAlready (link:string) {
-        const hasLink = await usersLinksCollection.findOne({original: link})
-        return hasLink ? true : false;
+        const foundOriginalLink = await usersLinksCollection.findOne({original: link})
+        return foundOriginalLink?.alias
     },
 
     async hasAliasAlready (alias:string) {

@@ -63,20 +63,19 @@ exports.linksRouter.post('/api/sendLink', linkValidation(), inputValidationMiddl
         // проверка наличия ссылки в бд
         const hasLink = yield usersLinksRepository_1.usersLinksRepository.hasLinkAlready(link);
         if (hasLink) {
-            return res.json({ message: 'такая ссылка уже есть в бд' });
+            return res.status(HTTP_Statuses.OK_200).json({ alias: hasLink });
         }
         let alias = yield generateRandomString(5);
-        console.log(alias);
         if (authOrAnon === 'auth') {
             const userid = req.body.user.id;
-            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(userid, link);
-            return res.status(HTTP_Statuses.OK_200).json({ message: 'ссылка добавлена в массив' });
+            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(userid, link, alias);
+            return res.status(HTTP_Statuses.CREATED_201).json({ alias });
         }
-        // если пользователь анонимный, то пушу ссылку в другую коллекцию
+        // если пользователь анонимный, то пушу ссылку с другим идентификатором
         if (authOrAnon === 'anon') {
             const { fingerprint } = req.body;
-            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(fingerprint, link);
-            return res.status(HTTP_Statuses.OK_200).json({ message: 'ссылка добавлена в массив анонимного пользователя' });
+            const newLinkInDB = yield usersLinksRepository_1.usersLinksRepository.pushLink(fingerprint, link, alias);
+            return res.status(HTTP_Statuses.CREATED_201).json({ alias });
         }
         // console.log('userid:', userid)
         // тут я должен проверить, анонимный пользователь отправил ссылку или нет. В зависимости от этого либо в один либо в др репоз
@@ -101,7 +100,6 @@ exports.linksRouter.post('/redirect',
 // если нет, то какая-то ошибка, которая на фронте отобразит, что такой ссылки нет
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req);
         const { alias } = req.body;
         const foundLink = yield usersLinksRepository_1.usersLinksRepository.findOriginalLink(alias);
         // console.log(foundLink)

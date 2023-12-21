@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersLinksRepository = void 0;
 const db_1 = require("./db");
 exports.usersLinksRepository = {
-    pushLink(owner, link) {
+    pushLink(owner, link, alias) {
         return __awaiter(this, void 0, void 0, function* () {
             // owner - либо ID залогиненого пользователя, либо finger анонимного
             // переделать структуру запроса, но не удаляй.
@@ -20,7 +20,7 @@ exports.usersLinksRepository = {
             return yield db_1.usersLinksCollection.insertOne({
                 "owner": owner,
                 "original": link,
-                "alias": "short",
+                "alias": alias,
                 "count": 0
             });
         });
@@ -33,8 +33,8 @@ exports.usersLinksRepository = {
     },
     hasLinkAlready(link) {
         return __awaiter(this, void 0, void 0, function* () {
-            const hasLink = yield db_1.usersLinksCollection.findOne({ original: link });
-            return hasLink ? true : false;
+            const foundOriginalLink = yield db_1.usersLinksCollection.findOne({ original: link });
+            return foundOriginalLink === null || foundOriginalLink === void 0 ? void 0 : foundOriginalLink.alias;
         });
     },
     hasAliasAlready(alias) {
