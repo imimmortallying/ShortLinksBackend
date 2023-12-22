@@ -1,5 +1,26 @@
 @shortlinks_url = http://localhost:5000
 
+
+POST {{shortlinks_url}}/api/v1/auth/signin HTTP/1.1
+content-type: application/json
+
+{
+    "username": "aacx",
+    "password": "asdasd"
+}
+
+###
+
+POST {{shortlinks_url}}/api/v1/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "username": "anton",
+    "password": "asdasd"
+}
+
+###
+
 POST {{shortlinks_url}}/api/sendLink HTTP/1.1
 content-type: application/json
 
