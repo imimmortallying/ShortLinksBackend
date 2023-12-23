@@ -130,7 +130,7 @@ async (req: Request, res: Response) => {
 }
 )
 
-linksRouter.get('/allUsersLinks',
+linksRouter.get('/api/allUsersLinks',
 authMiddleware, 
 async (req: Request, res: Response) => {
     try {
