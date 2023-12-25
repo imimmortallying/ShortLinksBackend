@@ -4,6 +4,9 @@ dist/*
 # External packages
 node_modules/*
 
+# Manifest direcotry
+manifest/
+
 # Yarn arifacts
 .pnp.*
 .yarn/*

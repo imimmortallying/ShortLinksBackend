@@ -1,9 +1,17 @@
-node_modules
-notes.js
-questions.js
-
 # Build artifacts
 dist/
 
+# External packages
+node_modules/*
+
 # Docker dev volume artifacts
 .mount/
+
+# Yarn arifacts
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
