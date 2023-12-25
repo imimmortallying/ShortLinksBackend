@@ -1,7 +1,9 @@
-import { User } from "../../../domain";
+import { User } from '../../../domain';
 
 export interface IUserRepository {
-    insert(user: User): Promise<any>;
+    createNextId(): string;
+
+    create(user: User): Promise<any>;
 
     exists(username: string): Promise<boolean>;
 

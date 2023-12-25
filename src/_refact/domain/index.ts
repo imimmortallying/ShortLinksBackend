@@ -1,6 +1,6 @@
-import { User, UserProps } from "./user.model";
+import { User, IUserProps } from './user.model';
 
 export {
     User,
-    UserProps
+    IUserProps as UserProps
 }

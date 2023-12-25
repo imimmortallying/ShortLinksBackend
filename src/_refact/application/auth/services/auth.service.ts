@@ -21,12 +21,15 @@ export class AuthService {
             return failureE(AuthServiceError.UsernameIsTaken);
         }
 
-        const user = new User({
-            username: cmd.username,
-            password: await this.passwordHasher.hash(cmd.password)
-        });
+        const user = new User(
+            this.userRepository.createNextId(),
+            {
+                username: cmd.username,
+                password: await this.passwordHasher.hash(cmd.password)
+            }
+        );
 
-        await this.userRepository.insert(user);
+        await this.userRepository.create(user);
 
         logger.info('A new user has been signed in');
 

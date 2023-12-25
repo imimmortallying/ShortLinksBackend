@@ -1,37 +1,37 @@
-import { UserEntity } from '../../../../configuration/configuration.mongo';
-import { User } from '../../../../domain';
+import mongoose from 'mongoose';
+import { getModel } from '../../../../configuration/configuration.mongo';
+import { User, UserProps } from '../../../../domain';
 import { IUserRepository } from '../user.repository';
 
 export default class MongooseUserRepository implements IUserRepository {
-    constructor(private persister: typeof UserEntity) { }
-    
-    async insert(user: User): Promise<any> {
-        const newUserEntity = await this.persister.create({
+
+    createNextId(): string {
+        return new mongoose.Types.ObjectId().toString();
+    }
+
+    async create(user: User): Promise<any> {
+        await getModel<UserProps>('user').create({
+            id: mongoose.Types.ObjectId.createFromHexString(user.id),
             username: user.username,
             password: user.password
         });
-        
-        user.id = newUserEntity.id;
-        
+
         return;
     }
-    
+
     async exists(username: string): Promise<boolean> {
-        const user = await this.persister.exists({ username: username });
+        const user = await getModel<UserProps>('user').exists({ username: username });
 
         return user !== null;
     }
 
     async getByUsername(username: string): Promise<User | null> {
-        const userEntity = await this.persister.findOne({ username: username }).exec();
+        const userEntity = await getModel<UserProps>('user').findOne({ username: username });
 
         if (userEntity == null) {
             return null;
         }
 
-        return new User({
-            username: userEntity.username,
-            password: userEntity.password
-        }, userEntity.id)
+        return new User(userEntity.id, { ...userEntity });
     }
 }
