@@ -1,10 +1,11 @@
 import { UserEntity } from '../../configuration/configuration.mongo';
-import MongooseUserRepository from './impl/user.mongo.repository';
+import MongooseUserRepository from './services/impl/user.mongo.repository';
+import { IUserRepository } from './services/user.repository';
 
-const userRepository = new MongooseUserRepository(UserEntity);
+const userRepository: IUserRepository = new MongooseUserRepository(UserEntity);
 
-export { IUserRepository } from './services/user.repository'
+export { IUserRepository } from './services/user.repository';
 
 export {
-    userRepository,
+    userRepository
 };

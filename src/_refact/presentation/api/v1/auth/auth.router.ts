@@ -5,7 +5,7 @@ import { StatusCodes } from '../../api.consts';
 import { RequestWithBody } from '../../api.types';
 import { validate } from '../../middlewares/api.middleware.validation';
 import { matchI } from 'ts-adt';
-import { AuthServiceError } from '../../../../application/auth/auth.service';
+import { AuthServiceError } from '../../../../application/auth/services/auth.service';
 
 const authRouter = Router();
 

@@ -1,6 +1,6 @@
-import { UserEntity } from '../../../configuration/configuration.mongo';
-import { User } from '../../../domain';
-import { IUserRepository } from '../services/user.repository';
+import { UserEntity } from '../../../../configuration/configuration.mongo';
+import { User } from '../../../../domain';
+import { IUserRepository } from '../user.repository';
 
 export default class MongooseUserRepository implements IUserRepository {
     constructor(private persister: typeof UserEntity) { }

@@ -1,8 +1,8 @@
-import logger from "../../core/core.logger.pino";
-import { Either, failureE, success } from "../../core/core.result";
-import { User } from "../../domain";
-import { IUserRepository } from "../users";
-import { IPasswordHasher } from "../utils/password.hasher";
+import logger from "../../../core/core.logger.pino";
+import { Either, failureE, success } from "../../../core/core.result";
+import { User } from "../../../domain";
+import { IUserRepository } from "../../users";
+import { IPasswordHasher } from "./password.hasher";
 
 export enum AuthServiceError {
     UsernameIsTaken = "Username already taken",

@@ -1,9 +1,9 @@
-import { passwordHasher } from "../utils";
-import { userRepository } from "../users";
-import { AuthService } from "./auth.service";
+import { userRepository } from '../users';
+import { AuthService } from './services/auth.service';
+import { BcryptPasswordHasher } from './services/impl/password.bcrypt.hasher';
 
-const authService = new AuthService(userRepository, passwordHasher);
+const authService = new AuthService(userRepository, new BcryptPasswordHasher());
 
 export {
-    authService,
+    authService
 };
