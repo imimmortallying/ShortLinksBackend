@@ -1,2 +1,14 @@
-dist/
-node_modules/
+# Build directory
+dist/*
+
+# External packages
+node_modules/*
+
+# Yarn arifacts
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

@@ -2,7 +2,7 @@ import { SetupMongoose } from "./_refact/configuration/configuration.mongo";
 import logger from "./_refact/core/core.logger.pino";
 import app from "./app";
 
-logger.info("App is starting")
+logger.info("App is starting");
 
 const SERVICE_PORT_DEFAULT = 5000;
 
