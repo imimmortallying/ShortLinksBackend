@@ -1,4 +1,4 @@
-import { Response, Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
 import { authService } from '../../../../application/auth';
 import { StatusCodes } from '../../api.consts';
@@ -11,7 +11,7 @@ const authRouter = Router();
 
 interface SignInDto { username: string, password: string, }
 
-const signInValidator = () => [
+const signUpValidator = () => [
     body('username')
         .trim().escape()
         .notEmpty()
@@ -26,9 +26,9 @@ const signInValidator = () => [
         .withMessage('Password length should be from 3 to 10 characters')
 ];
 
-authRouter.post('/signin',
-    signInValidator(), validate,
-    async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await authService.signIn(req.body))({
+authRouter.post('/signup',
+    signUpValidator(), validate,
+    async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await authService.registerUser(req.body))({
         success: () => {
             return res.status(StatusCodes.OK).json({ message: "User has been signed in" })
         },
@@ -42,10 +42,10 @@ authRouter.post('/signin',
     })
 );
 
-interface LogInDto { username: string, password: string, }
+interface SignInDto { username: string, password: string, }
 
-authRouter.post('/login',
-    async (req: RequestWithBody<LogInDto>, res: Response) => matchI(await authService.logIn(req.body))({
+authRouter.post('/signin',
+    async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await authService.createSession(req.body))({
         success: () => {
             return res.status(StatusCodes.OK).json({ message: "User successful authorized" })
         },
@@ -62,5 +62,11 @@ authRouter.post('/login',
         }
     })
 );
+
+authRouter.delete('/signout',
+    async (req: Request, res: Response) => {
+
+    }
+)
 
 export default authRouter;

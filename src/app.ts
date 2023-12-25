@@ -21,6 +21,6 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(helmet())
 
-app.use("/api/v1", v1Router);
+app.use('/api/v1', v1Router);
 
 export default app;
