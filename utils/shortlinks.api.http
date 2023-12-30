@@ -1,0 +1,9 @@
+@shortlinks_url = http://localhost:5000
+
+POST {{shortlinks_url}}/api/sendLink HTTP/1.1
+content-type: application/json
+
+{
+    "link" : "google.com",
+    "authOrAnon": "anon"
+}

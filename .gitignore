@@ -1,3 +1,9 @@
 node_modules
 notes.js
 questions.js
+
+# Build artifacts
+dist/
+
+# Docker dev volume artifacts
+.mount/
