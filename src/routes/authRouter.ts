@@ -135,7 +135,7 @@ authRouter.get('/refresh',
         } 
     })
 
-authRouter.post('/login',
+authRouter.post('/signin',
     nameValidation(), passwordValidation(), inputValidationMiddleware,
     async (req: RequestWithBody<UserPostCreateBodyModel>, res: Response) => { 
         try {

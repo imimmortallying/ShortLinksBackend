@@ -1,27 +1,26 @@
-// const express = require('express');
-import express from 'express';
-import { linksRouter } from './routes/linksRouter';
-import { authRouter } from './routes/authRouter';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express, { json } from 'express';
+import helmet from 'helmet';
+import pinoHttp, { Options as LoggerOptions } from 'pino-http';
+import logger from './_refact/core/core.logger.pino';
+import v1Router from './_refact/presentation/api/v1/api.v1.router';
 
-export const app = express(); // экспорт для передачи в тест
-const cors = require("cors"); // !middleware для избежания cors ошибки. С cors разобраться позже!
-const cookieParser = require('cookie-parser');
+const loggerOptions: LoggerOptions = {
+  logger: logger,
+  level: 'trace',
+};
 
+const corsOptions = { credentials: true, origin: 'http://localhost:4000' };
 
+const app = express();
 
-
-// parsing middleware, применяется при получении каждого запроса:
-const jsonBodyMiddleware = express.json();
-app.use(jsonBodyMiddleware);
+app.use(pinoHttp(loggerOptions))
+app.use(json());
 app.use(cookieParser());
-app.use(cors({
-    credentials: true,
-    origin: 'http://localhost:4000'
-}));
+app.use(cors(corsOptions));
+app.use(helmet())
 
+app.use('/api/v1', v1Router);
 
-app.use("/", linksRouter);
-app.use("/api", authRouter);
-
-
-
+export default app;

@@ -1,19 +1,21 @@
-import { app } from "./app";
-import { runDb } from "./repositories/db";
+import { configureMongo } from './_refact/configuration/configuration.mongo';
+import logger from './_refact/core/core.logger.pino';
+import app from './app';
+
+logger.info('App is starting');
 
 const SERVICE_PORT_DEFAULT = 5000;
 
 const servicePort = process.env.SL_SERVICE__PORT || SERVICE_PORT_DEFAULT;
 
+app.listen(servicePort, async () => {
+    await configureMongo();
 
-const startApp = async () => {
-  await runDb();
+    logger.info('Example app listening on port %d', servicePort);
+});
 
-  app.listen(servicePort, () => {
-    console.log(`Example app listening on port ${servicePort}`)
-  });
-}
+process.on('SIGINT', () => {
+    logger.info('App is shutting down');
 
-startApp();
-
-export { app };
+    process.exit(0);
+});
