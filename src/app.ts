@@ -14,7 +14,7 @@ const loggerOptions: LoggerOptions = {
 const corsOptions = { credentials: true, origin: 'http://localhost:4000' };
 
 const app = express();
-// some changes
+
 app.use(pinoHttp(loggerOptions))
 app.use(json());
 app.use(cookieParser());
