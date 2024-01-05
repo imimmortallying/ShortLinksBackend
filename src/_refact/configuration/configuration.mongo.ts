@@ -17,7 +17,7 @@ const setupModel = <TSchema extends Schema = any>(
 };
 
 export const createMongooseConnectionPool = (): Promise<Mongoose> => {
-    return mongoose.connect('mongodb://dev:dev@localhost:5010/');
+    return mongoose.connect('mongodb://127.0.0.1/users');
 };
 
 /* export const createMongoSession = (): Promise<ClientSession> => {

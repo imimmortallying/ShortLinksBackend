@@ -1,13 +1,21 @@
 import logger from '../../../core/core.logger.pino';
-import { Either, failureE, success } from '../../../core/core.result';
+// import { Either, EitherUser, EitherMessage, failureE, success } from '../../../core/core.result';
+import { EitherUser, EitherMessage, successWithMessage, errorWithMessage} from '../../../core/core.result';
 import { User } from '../../../domain';
+import { IUserProps } from '../../../domain/user.model';
 import { IUserRepository } from '../../users';
 import { IPasswordHasher } from './password.hasher';
+
+import * as E from 'fp-ts/Either';
 
 export enum AuthServiceError {
     UsernameIsTaken = 'Username already taken',
     UserDoesNotExist = 'User does not exist',
     CredentialFailure = 'Username or password is invalid',
+}
+
+export enum AuthServiceSuccessMessage {
+    UserHasBeenSignedIn = 'User has been signed in'
 }
 
 export class AuthService {
@@ -16,9 +24,12 @@ export class AuthService {
         private passwordHasher: IPasswordHasher
     ) { }
 
-    async registerUser(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {
+
+
+    async registerUser(cmd: { username: string, password: string }): Promise<EitherMessage> {
         if (await this.userRepository.exists(cmd.username)) {
-            return failureE(AuthServiceError.UsernameIsTaken);
+            // return E.left({errorMessage: AuthServiceError.UsernameIsTaken});
+            return errorWithMessage(AuthServiceError.UsernameIsTaken);
         }
 
         const user = new User(
@@ -33,20 +44,57 @@ export class AuthService {
 
         logger.info('A new user has been signed in');
 
-        return success();
+        // return E.right({successMessage: AuthServiceSuccessMessage.UserHasBeenSignedIn});
+        return successWithMessage(AuthServiceSuccessMessage.UserHasBeenSignedIn);
     }
+    // async registerUser(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {
+    //     if (await this.userRepository.exists(cmd.username)) {
+    //         return failureE(AuthServiceError.UsernameIsTaken);
+    //     }
 
-    async createSession(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {
+    //     const user = new User(
+    //         this.userRepository.createNextId(),
+    //         {
+    //             username: cmd.username,
+    //             password: await this.passwordHasher.hash(cmd.password)
+    //         }
+    //     );
+
+    //     await this.userRepository.create(user);
+
+    //     logger.info('A new user has been signed in');
+
+    //     return success();
+    // }
+
+    // async createSession(cmd: { username: string, password: string }): Promise<EitherUser<string>> {
+    // async createSession(cmd: { username: string, password: string }): Promise<EitherUser<string>> {
+    async createSession(cmd: { username: string, password: string }): Promise<EitherUser<IUserProps>> {
         const user = await this.userRepository.getByUsername(cmd.username);
-
+        console.log(user)
         if (user === null) {
-            return failureE(AuthServiceError.UserDoesNotExist);
+            return  E.left(AuthServiceError.UserDoesNotExist);
         }
+        return  E.right(user)
 
-        if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
-            return failureE(AuthServiceError.CredentialFailure);
-        }
+        // if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
+        //     return E.left(AuthServiceError.CredentialFailure);
+        // }
 
-        return success();
+        // return E.right(user);
+        // return E.right(AuthServiceSuccessMessage.UserHasBeenSignedIn);
     }
+    // async createSession(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {
+    //     const user = await this.userRepository.getByUsername(cmd.username);
+
+    //     if (user === null) {
+    //         return failureE(AuthServiceError.UserDoesNotExist);
+    //     }
+
+    //     if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
+    //         return failureE(AuthServiceError.CredentialFailure);
+    //     }
+
+    //     return success();
+    // }
 }
