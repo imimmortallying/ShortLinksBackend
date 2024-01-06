@@ -1,11 +1,17 @@
 import mongoose, { Model, Mongoose, Schema } from 'mongoose';
 import { IUserProps } from '../domain/user.model';
+import { ITokenProps, UserToken } from '../application/tokens/services/tokens.repository';
 
 const entitySchemas = new Map<string, Schema>();
 
 entitySchemas.set('user', new Schema<IUserProps>({
     username: String,
     password: String
+}));
+
+entitySchemas.set('token', new Schema<ITokenProps>({
+    id: String,
+    refreshToken: String,
 }));
 
 const entityModels = new Map<string, Model<any>>;
@@ -17,6 +23,8 @@ const setupModel = <TSchema extends Schema = any>(
 };
 
 export const createMongooseConnectionPool = (): Promise<Mongoose> => {
+    // mongoose.connect('mongodb://127.0.0.1/tokens');
+    
     return mongoose.connect('mongodb://127.0.0.1/users');
 };
 

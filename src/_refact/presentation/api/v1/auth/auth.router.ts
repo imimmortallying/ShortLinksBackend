@@ -32,10 +32,10 @@ authRouter.post('/signup',
 
         const foundUser = await authService.registerUser(req.body);
         // console.log('founduser:',foundUser)
-        if (foundUser._tag === 'Right'){
-            return res.status(StatusCodes.CONFLICT).json({ message: foundUser.right});
+        if (foundUser._tag === 'Right') {
+            return res.status(StatusCodes.CONFLICT).json({ message: foundUser.right });
         } else {
-            return res.status(StatusCodes.OK).json({ message:foundUser.left})
+            return res.status(StatusCodes.OK).json({ message: foundUser.left })
         }
     }
 );
@@ -59,13 +59,18 @@ interface SignInDto { username: string, password: string, }
 
 authRouter.post('/signin',
     async (req: RequestWithBody<SignInDto>, res: Response) => {
+        // это не founduser
         const foundUser = await authService.createSession(req.body)
-        console.log('founduser:',foundUser)
-        if (foundUser._tag === 'Left'){
-            return res.status(StatusCodes.NOT_FOUND).json({message:foundUser.left})
-        }
-        // return res.status(StatusCodes.OK).json({foundUser})
-        return res.status(StatusCodes.OK).json({foundUser})
+
+        foundUser._tag === 'Left'
+            ? res.status(StatusCodes.NOT_FOUND).json({ message: foundUser.left })
+            : res
+            .cookie('refreshToken', foundUser.right.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+            .json({ accessToken: foundUser.right.accessToken }) //в прошлой версии я возвращал еще и username. Сопоставить с фронтом
+            .status(StatusCodes.OK)
+
+        return;
+        // добавить коллекцию токенов, чтобы проверить, работает ли модель, потом убрать отсюда
     }
 );
 // authRouter.post('/signin',
