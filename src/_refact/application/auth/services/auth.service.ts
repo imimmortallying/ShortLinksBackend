@@ -1,8 +1,9 @@
 import logger from '../../../core/core.logger.pino';
 // import { Either, EitherUser, EitherMessage, failureE, success } from '../../../core/core.result';
-import { EitherUser, EitherMessage, successWithMessage, errorWithMessage} from '../../../core/core.result';
+import { EitherMessage, successWithMessage, errorWithMessage, EitherR} from '../../../core/core.result';
 import { User } from '../../../domain';
 import { IUserProps } from '../../../domain/user.model';
+import { ITokensRepository } from '../../tokens/services/tokens.repository';
 import { IUserRepository } from '../../users';
 import { IPasswordHasher } from './password.hasher';
 
@@ -21,6 +22,7 @@ export enum AuthServiceSuccessMessage {
 export class AuthService {
     constructor(
         private userRepository: IUserRepository,
+        private tokensRepository: ITokensRepository,
         private passwordHasher: IPasswordHasher
     ) { }
 
@@ -69,20 +71,20 @@ export class AuthService {
 
     // async createSession(cmd: { username: string, password: string }): Promise<EitherUser<string>> {
     // async createSession(cmd: { username: string, password: string }): Promise<EitherUser<string>> {
-    async createSession(cmd: { username: string, password: string }): Promise<EitherUser<IUserProps>> {
+    async createSession(cmd: { username: string, password: string }): Promise<EitherR<{accessToken:string, refreshToken:string}>> {
         const user = await this.userRepository.getByUsername(cmd.username);
         console.log(user)
         if (user === null) {
             return  E.left(AuthServiceError.UserDoesNotExist);
         }
 
-        // return  E.right(user)
-
         if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
             return E.left(AuthServiceError.CredentialFailure);
         }
 
-        return E.right(user);
+        const newTokens = await this.tokensRepository.save({id:user.id, username:user.username})
+
+        return E.right(newTokens);
         // return E.right(AuthServiceSuccessMessage.UserHasBeenSignedIn);
     }
     // async createSession(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {
