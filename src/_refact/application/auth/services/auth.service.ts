@@ -75,13 +75,14 @@ export class AuthService {
         if (user === null) {
             return  E.left(AuthServiceError.UserDoesNotExist);
         }
-        return  E.right(user)
 
-        // if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
-        //     return E.left(AuthServiceError.CredentialFailure);
-        // }
+        // return  E.right(user)
 
-        // return E.right(user);
+        if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
+            return E.left(AuthServiceError.CredentialFailure);
+        }
+
+        return E.right(user);
         // return E.right(AuthServiceSuccessMessage.UserHasBeenSignedIn);
     }
     // async createSession(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {

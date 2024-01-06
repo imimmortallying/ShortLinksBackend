@@ -27,11 +27,10 @@ export default class MongooseUserRepository implements IUserRepository {
 
     async getByUsername(username: string): Promise<User | null> {
         const userEntity = await getModel<UserProps>('user').findOne({ username: username });
-
         if (userEntity == null) {
             return null;
         }
 
-        return new User(userEntity.id, { ...userEntity });
+        return new User(userEntity.id, { username: userEntity.username, password:userEntity.password });
     }
 }

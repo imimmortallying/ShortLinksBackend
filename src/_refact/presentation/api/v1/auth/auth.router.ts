@@ -61,9 +61,9 @@ authRouter.post('/signin',
     async (req: RequestWithBody<SignInDto>, res: Response) => {
         const foundUser = await authService.createSession(req.body)
         console.log('founduser:',foundUser)
-        // if (foundUser._tag === 'Left'){
-        //     return res.status(StatusCodes.NOT_FOUND).json({message:foundUser.left})
-        // }
+        if (foundUser._tag === 'Left'){
+            return res.status(StatusCodes.NOT_FOUND).json({message:foundUser.left})
+        }
         // return res.status(StatusCodes.OK).json({foundUser})
         return res.status(StatusCodes.OK).json({foundUser})
     }
