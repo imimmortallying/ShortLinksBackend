@@ -24,7 +24,8 @@ export class AuthService {
         private userRepository: IUserRepository,
         private tokensRepository: ITokensRepository,
         private passwordHasher: IPasswordHasher
-    ) { }
+    ) { } // вспомни, почитай че это за скобки
+    // прочитай про абстрактные классы. Хотя, и без них классы типизруются через I
 
 
 

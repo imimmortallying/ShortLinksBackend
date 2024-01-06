@@ -1,33 +1,20 @@
 import mongoose from 'mongoose';
 import { getModel } from '../../../../configuration/configuration.mongo';
-// import { User, UserProps } from '../../../../domain';
-import { User, UserProps } from '../../../../domain';
-// import { IUserRepository } from '../user.repository';
 import { ITokensRepository, UserToken } from '../tokens.repository';
-import { keys } from "../impl/configuration.tokens"
-const jwt = require('jsonwebtoken');
+import { ITokensGenerator } from '../tokens.generator';
+
 
 export default class MongooseTokensRepository implements ITokensRepository {
 
+    constructor(
+        private tokensGenerator: ITokensGenerator,
+    ) { }
+
     async save(userToken: UserToken): Promise<any> {
-        // тут создал комплексный метод: проверка наличия токена в бд, физическое создание ч/з
-        // стороннюю библиотеку, сохранение или перезапись в бд
-        // возвращение обоих токенов в auth сервис. 
 
-        const generateTokens = (payload: { id: string, username: string }) => {
-            const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } = keys
-            const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, { expiresIn: '30m' });
-            const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: '30d' });
-            return {
-                accessToken,
-                refreshToken
-            }
-        }
-
-        const { accessToken, refreshToken } = generateTokens({ id: userToken.id, username: userToken.username })
+        const { accessToken, refreshToken } = this.tokensGenerator.generate(userToken.id, userToken.username)
 
         const newToken = await getModel<UserToken>('token').findOneAndUpdate(
-            // { id: userToken.id },
             { id: mongoose.Types.ObjectId.createFromHexString(userToken.id) },
             { refreshToken: refreshToken },
             {
