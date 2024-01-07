@@ -1,21 +1,22 @@
 import mongoose from 'mongoose';
-import { getModel } from '../../../../configuration/configuration.mongo';
-import { ITokensRepository, UserToken } from '../tokens.repository';
-import { ITokensGenerator } from '../tokens.generator';
+import { getModel } from '../../../../../configuration/configuration.mongo';
+import { ISessionRepository } from '../models/ISession.repository';
+import { ISessionGenerator } from '../models/ISession.generator';
+import { User } from '../../../../../domain';
 
 
-export default class MongooseTokensRepository implements ITokensRepository {
+export default class MongooseSessionRepository implements ISessionRepository {
 
     constructor(
-        private tokensGenerator: ITokensGenerator,
+        private sessionGenerator: ISessionGenerator,
     ) { }
 
-    async save(userToken: UserToken): Promise<any> {
+    async createSession(user: User): Promise<any> {
 
-        const { accessToken, refreshToken } = this.tokensGenerator.generate(userToken.id, userToken.username)
+        const { accessToken, refreshToken } = this.sessionGenerator.generate(user.id, user.username)
 
-        const newToken = await getModel<UserToken>('token').findOneAndUpdate(
-            { id: mongoose.Types.ObjectId.createFromHexString(userToken.id) },
+        const newToken = await getModel<{id:string, username:string}>('token').findOneAndUpdate(
+            { id: mongoose.Types.ObjectId.createFromHexString(user.id) },
             { refreshToken: refreshToken,
                 expireAt: Date.now() + 10 * 60 * 6000 * 24 * 30, // единственный вариант установки TTL, который сработал, остальные работают минуту
             },

@@ -1,4 +1,4 @@
-import { User } from '../../../domain';
+import { User } from '../../../../domain';
 
 export interface IUserRepository {
     createNextId(): string;

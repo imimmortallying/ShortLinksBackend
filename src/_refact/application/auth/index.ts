@@ -1,9 +1,10 @@
-import { tokensRepository } from '../tokens';
+import { sessionGenerator } from './services/session.generator';
 import { userRepository } from '../users';
 import { AuthService } from './services/auth.service';
-import { BcryptPasswordHasher } from './services/impl/password.bcrypt.hasher';
+import { bcryptPasswordHasher } from './services/password.hasher';
 
-const authService = new AuthService(userRepository, tokensRepository, new BcryptPasswordHasher());
+
+const authService = new AuthService(userRepository, sessionGenerator, bcryptPasswordHasher);
 
 export {
     authService

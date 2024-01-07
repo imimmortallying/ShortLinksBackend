@@ -3,9 +3,9 @@ import logger from '../../../core/core.logger.pino';
 import { EitherMessage, successWithMessage, errorWithMessage, EitherR} from '../../../core/core.result';
 import { User } from '../../../domain';
 import { IUserProps } from '../../../domain/user.model';
-import { ITokensRepository } from '../../tokens/services/tokens.repository';
+import { ISessionRepository } from './session.generator/models/ISession.repository';
 import { IUserRepository } from '../../users';
-import { IPasswordHasher } from './password.hasher';
+import { IPasswordHasher } from './password.hasher/models/IPassword.hasher';
 
 import * as E from 'fp-ts/Either'
 
@@ -22,7 +22,7 @@ export enum AuthServiceSuccessMessage {
 export class AuthService {
     constructor(
         private userRepository: IUserRepository,
-        private tokensRepository: ITokensRepository,
+        private sessionRepository: ISessionRepository,
         private passwordHasher: IPasswordHasher
     ) { } // вспомни, почитай че это за скобки
     // прочитай про абстрактные классы. Хотя, и без них классы типизруются через I
@@ -83,9 +83,9 @@ export class AuthService {
             return E.left(AuthServiceError.CredentialFailure);
         }
 
-        const newTokens = await this.tokensRepository.save({id:user.id, username:user.username})
+        const newSession = await this.sessionRepository.createSession(user)
 
-        return E.right(newTokens);
+        return E.right(newSession);
         // return E.right(AuthServiceSuccessMessage.UserHasBeenSignedIn);
     }
     // async createSession(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {

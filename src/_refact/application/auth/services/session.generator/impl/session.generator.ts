@@ -1,9 +1,9 @@
-import { ITokensGenerator } from "../tokens.generator";
+import { ISessionGenerator } from "../models/ISession.generator";
 import { keys } from "./configuration.tokens";
 // const jwt = require('jsonwebtoken');
 import jwt from "jsonwebtoken"
 
-export class TokensGenerator implements ITokensGenerator {
+export class SessionGenerator implements ISessionGenerator {
     // интерфейс принимаего и возвращаемого значения уже где-то лежит, доделай, когда наведешь порядок
     // нужен ли тут async и возврат промиса?
     generate(id: string, username: string): { accessToken: string; refreshToken: string; } {

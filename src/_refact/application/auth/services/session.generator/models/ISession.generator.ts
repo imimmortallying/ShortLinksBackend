@@ -1,4 +1,4 @@
-export interface ITokensGenerator {
+export interface ISessionGenerator {
     // нужен ли промис для создания токенов? вроде работает
     generate(id: string, username: string): {accessToken:string, refreshToken:string};
 

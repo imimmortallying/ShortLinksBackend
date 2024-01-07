@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { getModel } from '../../../../configuration/configuration.mongo';
 import { User, UserProps } from '../../../../domain';
-import { IUserRepository } from '../user.repository';
+import { IUserRepository } from '../models/IUser.repository';
 
 export default class MongooseUserRepository implements IUserRepository {
 

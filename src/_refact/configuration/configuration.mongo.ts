@@ -1,6 +1,6 @@
 import mongoose, { Model, Mongoose, Schema } from 'mongoose';
 import { IUserProps } from '../domain/user.model';
-import { ITokenProps, UserToken } from '../application/tokens/services/tokens.repository';
+import { ISessionProps } from '../application/auth/services/session.generator/models/ISession.repository';
 
 const entitySchemas = new Map<string, Schema>();
 
@@ -9,7 +9,7 @@ entitySchemas.set('user', new Schema<IUserProps>({
     password: String
 }));
 
-entitySchemas.set('token', new Schema<ITokenProps>({
+entitySchemas.set('token', new Schema<ISessionProps>({
     id: String,
     refreshToken: String,
     expireAt: {
