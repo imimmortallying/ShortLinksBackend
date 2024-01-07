@@ -16,10 +16,13 @@ export default class MongooseTokensRepository implements ITokensRepository {
 
         const newToken = await getModel<UserToken>('token').findOneAndUpdate(
             { id: mongoose.Types.ObjectId.createFromHexString(userToken.id) },
-            { refreshToken: refreshToken },
+            { refreshToken: refreshToken,
+                expireAt: Date.now() + 10 * 60 * 6000 * 24 * 30, // единственный вариант установки TTL, который сработал, остальные работают минуту
+            },
             {
                 new: true,
                 upsert: true,
+                
             }
         );
 

@@ -8,6 +8,7 @@ export interface UserToken {
 export interface ITokenProps {
     id: string,
     refreshToken: string,
+    expireAt: {}
 }
 
 export interface ITokensRepository {

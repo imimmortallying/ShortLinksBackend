@@ -12,6 +12,11 @@ entitySchemas.set('user', new Schema<IUserProps>({
 entitySchemas.set('token', new Schema<ITokenProps>({
     id: String,
     refreshToken: String,
+    expireAt: {
+        type: Date,
+        default: Date.now() + 10 * 60 * 6000 * 24 * 30, // единственный вариант установки TTL, который сработал, остальные работают минуту
+        // можно попробовать вынести в переменную. Тогда не забудь указать тут, при создании документа и при создании токена в генераторе одинаковые значения
+    }
 }));
 
 const entityModels = new Map<string, Model<any>>;
