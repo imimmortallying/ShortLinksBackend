@@ -1,6 +1,7 @@
 import { ITokensGenerator } from "../tokens.generator";
 import { keys } from "./configuration.tokens";
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
+import jwt from "jsonwebtoken"
 
 export class TokensGenerator implements ITokensGenerator {
     // интерфейс принимаего и возвращаемого значения уже где-то лежит, доделай, когда наведешь порядок

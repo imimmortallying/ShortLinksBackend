@@ -7,7 +7,7 @@ import { ITokensRepository } from '../../tokens/services/tokens.repository';
 import { IUserRepository } from '../../users';
 import { IPasswordHasher } from './password.hasher';
 
-import * as E from 'fp-ts/Either';
+import * as E from 'fp-ts/Either'
 
 export enum AuthServiceError {
     UsernameIsTaken = 'Username already taken',
