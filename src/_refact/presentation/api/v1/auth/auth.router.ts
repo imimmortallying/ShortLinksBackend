@@ -63,13 +63,9 @@ authRouter.delete('/signout',
     async (req: Request, res: Response) => {
         // нужно ли проверять, что куки не пустые
         // в куки файле может быть много разных кук-строк, как с ними правильно работать?
-        const {refreshToken} = req.cookies;
 
-        if (refreshToken === undefined) {
-            return res.clearCookie('refreshToken').status(StatusCodes.BAD_REQUEST).json({ message: 'cookie is empty'})
-        }
 
-        const deletedSession = await authService.deleteSession(refreshToken)
+        const deletedSession = await authService.deleteSession(req.cookies)
 
          return deletedSession._tag === "Left"
              ? res.status(StatusCodes.UNAUTHORIZED).json({ message: deletedSession.left })

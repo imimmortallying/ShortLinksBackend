@@ -13,6 +13,7 @@ export enum AuthServiceError {
     UsernameIsTaken = 'Username already taken',
     UserDoesNotExist = 'User does not exist',
     CredentialFailure = 'Username or password is invalid',
+    CookieIsEmpty = 'Cookie is empty'
 }
 
 export enum AuthServiceSuccessMessage {
@@ -67,8 +68,12 @@ export class AuthService {
         return E.right(newSession);
     }
 
-    async deleteSession(refreshToken: string): Promise<EitherMessage> {
-        const foundSession = await this.sessionRepository.deleteSession(refreshToken);
+    async deleteSession(cmd:{refreshToken:string}): Promise<EitherMessage> {
+        
+        if (cmd.refreshToken === undefined) {
+            return E.left(AuthServiceError.CookieIsEmpty)
+        }
+        const foundSession = await this.sessionRepository.deleteSession(cmd.refreshToken);
 
         return foundSession === true
             ? E.right(AuthServiceSuccessMessage.UserHasBeenSignedOut)
