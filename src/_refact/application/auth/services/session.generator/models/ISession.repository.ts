@@ -1,11 +1,8 @@
 
-// export interface UserToken {
-//     id: string,
-//     // refreshToken: string,
-//     username: string,
-// }
-
-import { User } from "../../../../../domain";
+interface User {
+    username: string,
+    password: string
+}
 
 export interface ISessionProps {
     id: string,
@@ -14,7 +11,6 @@ export interface ISessionProps {
 }
 
 export interface ISessionRepository {
-    // getByUserId(id:string): string;
 
     createSession(user: User): Promise<{ accessToken:string, refreshToken:string }>;
 
