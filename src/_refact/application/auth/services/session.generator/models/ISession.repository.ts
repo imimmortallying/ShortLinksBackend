@@ -13,5 +13,6 @@ export interface ISessionProps {
 export interface ISessionRepository {
 
     createSession(user: User): Promise<{ accessToken:string, refreshToken:string }>;
+    deleteSession(refreshToken:string): Promise<boolean>;
 
 }

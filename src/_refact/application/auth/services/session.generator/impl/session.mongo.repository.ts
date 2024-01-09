@@ -30,6 +30,11 @@ export default class MongooseSessionRepository implements ISessionRepository {
         return { accessToken, refreshToken }
     }
 
+    async deleteSession(refreshToken:string): Promise<boolean> {
+        const isSessionDeleted = await getModel<{refreshToken:string}>('token').deleteOne({refreshToken:refreshToken});
+        return isSessionDeleted.deletedCount === 1;
+    }
+
 
 
     // createNextId(): string {

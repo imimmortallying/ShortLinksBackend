@@ -1,6 +1,6 @@
 import logger from '../../../core/core.logger.pino';
-// import { Either, EitherUser, EitherMessage, failureE, success } from '../../../core/core.result';
-import { EitherMessage, successWithMessage, errorWithMessage, EitherR} from '../../../core/core.result';
+
+import { EitherMessage, successWithMessage, errorWithMessage, EitherR } from '../../../core/core.result';
 import { User } from '../../../domain';
 import { IUserProps } from '../../../domain/user.model';
 import { ISessionRepository } from './session.generator/models/ISession.repository';
@@ -16,7 +16,8 @@ export enum AuthServiceError {
 }
 
 export enum AuthServiceSuccessMessage {
-    UserHasBeenSignedUp = 'User has been signed up'
+    UserHasBeenSignedUp = 'User has been signed up',
+    UserHasBeenSignedOut = 'User has been signed out',
 }
 
 export class AuthService {
@@ -31,7 +32,7 @@ export class AuthService {
 
     async registerUser(cmd: { username: string, password: string }): Promise<EitherMessage> {
         if (await this.userRepository.exists(cmd.username)) {
-            // return E.left({errorMessage: AuthServiceError.UsernameIsTaken});
+
             return errorWithMessage(AuthServiceError.UsernameIsTaken);
         }
 
@@ -47,36 +48,14 @@ export class AuthService {
 
         logger.info('A new user has been signed in');
 
-        // return E.right({successMessage: AuthServiceSuccessMessage.UserHasBeenSignedIn});
         return successWithMessage(AuthServiceSuccessMessage.UserHasBeenSignedUp);
     }
-    // async registerUser(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {
-    //     if (await this.userRepository.exists(cmd.username)) {
-    //         return failureE(AuthServiceError.UsernameIsTaken);
-    //     }
 
-    //     const user = new User(
-    //         this.userRepository.createNextId(),
-    //         {
-    //             username: cmd.username,
-    //             password: await this.passwordHasher.hash(cmd.password)
-    //         }
-    //     );
-
-    //     await this.userRepository.create(user);
-
-    //     logger.info('A new user has been signed in');
-
-    //     return success();
-    // }
-
-    // async createSession(cmd: { username: string, password: string }): Promise<EitherUser<string>> {
-    // async createSession(cmd: { username: string, password: string }): Promise<EitherUser<string>> {
-    async createSession(cmd: { username: string, password: string }): Promise<EitherR<{accessToken:string, refreshToken:string}>> {
+    async createSession(cmd: { username: string, password: string }): Promise<EitherR<{ accessToken: string, refreshToken: string }>> {
         const user = await this.userRepository.getByUsername(cmd.username);
         console.log(user)
         if (user === null) {
-            return  E.left(AuthServiceError.UserDoesNotExist);
+            return E.left(AuthServiceError.UserDoesNotExist);
         }
 
         if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
@@ -86,19 +65,15 @@ export class AuthService {
         const newSession = await this.sessionRepository.createSession(user)
 
         return E.right(newSession);
-        // return E.right(AuthServiceSuccessMessage.UserHasBeenSignedIn);
     }
-    // async createSession(cmd: { username: string, password: string }): Promise<Either<AuthServiceError>> {
-    //     const user = await this.userRepository.getByUsername(cmd.username);
 
-    //     if (user === null) {
-    //         return failureE(AuthServiceError.UserDoesNotExist);
-    //     }
+    async deleteSession(refreshToken: string): Promise<EitherMessage> {
+        const foundSession = await this.sessionRepository.deleteSession(refreshToken);
 
-    //     if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
-    //         return failureE(AuthServiceError.CredentialFailure);
-    //     }
+        return foundSession === true
+            ? E.right(AuthServiceSuccessMessage.UserHasBeenSignedOut)
+            : E.left(AuthServiceError.UserDoesNotExist) // какая должна быть ошибка и нужна ли она. Она возникает, если не нашлось совпадений для удаления
 
-    //     return success();
-    // }
+    }
+
 }

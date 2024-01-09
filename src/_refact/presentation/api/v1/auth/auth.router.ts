@@ -39,21 +39,6 @@ authRouter.post('/signup',
         }
     }
 );
-// authRouter.post('/signup',
-//     signUpValidator(), validate,
-//     async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await authService.registerUser(req.body))({
-//         success: () => {
-//             return res.status(StatusCodes.OK).json({ message: "User has been signed in" })
-//         },
-//         failure: ({ error }) => {
-//             if (error === AuthServiceError.UsernameIsTaken) {
-//                 return res.status(StatusCodes.CONFLICT).json({ message: error });
-//             }
-
-//             return res.status(StatusCodes.INTERNAL).json({ message: "Unexpected error" });
-//         }
-//     })
-// );
 
 interface SignInDto { username: string, password: string, }
 
@@ -62,39 +47,36 @@ authRouter.post('/signin',
         // это не founduser
         const foundUser = await authService.createSession(req.body)
 
-        foundUser._tag === 'Left'
+        return foundUser._tag === 'Left'
             ? res.status(StatusCodes.NOT_FOUND).json({ message: foundUser.left })
             : res
-            .cookie('refreshToken', foundUser.right.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
-            .json({ accessToken: foundUser.right.accessToken }) //в прошлой версии я возвращал еще и username. Сопоставить с фронтом
-            .status(StatusCodes.OK)
+                .cookie('refreshToken', foundUser.right.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+                .json({ accessToken: foundUser.right.accessToken }) //в прошлой версии я возвращал еще и username. Сопоставить с фронтом
+                .status(StatusCodes.OK)
 
-        return;
         // добавить коллекцию токенов, чтобы проверить, работает ли модель, потом убрать отсюда
     }
 );
-// authRouter.post('/signin',
-//     async (req: RequestWithBody<SignInDto>, res: Response) => matchI(await authService.createSession(req.body))({
-//         success: () => {
-//             return res.status(StatusCodes.OK).json({ message: "User successful authorized" })
-//         },
-//         failure: ({ error }) => {
-//             if (error === AuthServiceError.UserDoesNotExist) {
-//                 return res.status(StatusCodes.NOT_FOUND).json({ message: error });
-//             }
 
-//             if (error === AuthServiceError.CredentialFailure) {
-//                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: error });
-//             }
-
-//             return res.status(StatusCodes.INTERNAL).json({ message: "Unexpected error" });
-//         }
-//     })
-// );
 
 authRouter.delete('/signout',
     async (req: Request, res: Response) => {
+        // нужно ли проверять, что куки не пустые
+        // в куки файле может быть много разных кук-строк, как с ними правильно работать?
+        const {refreshToken} = req.cookies;
 
+        if (refreshToken === undefined) {
+            return res.clearCookie('refreshToken').status(StatusCodes.BAD_REQUEST).json({ message: 'cookie is empty'})
+        }
+
+        const deletedSession = await authService.deleteSession(refreshToken)
+
+         return deletedSession._tag === "Left"
+             ? res.status(StatusCodes.UNAUTHORIZED).json({ message: deletedSession.left })
+             : res
+                 .clearCookie('refreshToken')
+                 .json({ message: deletedSession.right })
+                 .status(StatusCodes.OK)
     }
 )
 
