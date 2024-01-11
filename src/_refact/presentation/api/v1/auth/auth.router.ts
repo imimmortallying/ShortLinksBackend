@@ -11,6 +11,9 @@ const authRouter = Router();
 
 interface SignInDto { username: string, password: string, }
 
+//todo доделать валидацию всех роутов
+
+
 const signUpValidator = () => [
     body('username')
         .trim().escape()
@@ -51,7 +54,7 @@ authRouter.post('/signin',
             ? res.status(StatusCodes.NOT_FOUND).json({ message: foundUser.left })
             : res
                 .cookie('refreshToken', foundUser.right.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
-                .json({ accessToken: foundUser.right.accessToken }) //в прошлой версии я возвращал еще и username. Сопоставить с фронтом
+                .json({ accessToken: foundUser.right.accessToken, user:{username:req.body.username} }) //в прошлой версии я возвращал еще и username. Сопоставить с фронтом
                 .status(StatusCodes.OK)
 
         // добавить коллекцию токенов, чтобы проверить, работает ли модель, потом убрать отсюда
