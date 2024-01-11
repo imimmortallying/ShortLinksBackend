@@ -32,20 +32,31 @@ export class LinkService {
 
     async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon'}): Promise<EitherMessage> {
 
-        // если статус = signedin, то нужно провалидировать токен
-        // if (cmd.status === 'signedin' && !accessToken) return E.left(SessionValidationError.EmptyAccessToken);
-        // if (cmd.status === 'signedin') {
-        //     const userData = this.tokensGenerator.validateAccessToken(accessToken)
-        //     console.log("USERDATA:", userData.id)
-        // }
+        // получился мутант с минимальной читаемостью, явно нарушающий все solid и тп принципы
+        // я опять запутался что где лучше вызывать и где хранить
+        // если бы я просто инкапсулировал модуль и обращался к нему по необходимости, мне не пришлось бы делать
+        // такие конструкции. Когда нужна эта инкапсуляция класса в классе?
+        async function checkAlias(length:number, aliasGenerator:IAliasGenerator, linkResopitory:ILinkRepository) {
+            let result = aliasGenerator.generate(length)
+            let hasAlias = await linkResopitory.aliasExists(result);
+            if (hasAlias){
+                result = this.aliasGenerator.generate(length);
+            }
+            return result;
+        }
+
         const link = new Link(
             this.linkResopitory.createNextId(),
             {
-                alias: this.aliasGenerator.generate(5), // добавить await, чтобы alias generator не только создавал, но и проверял наличие alias в бд
+                alias: await checkAlias(5, this.aliasGenerator, this.linkResopitory), 
                 original: cmd.link,
                 owner: cmd.user
             }
         );
+
+
+
+        // const aliasExists = this.linkResopitory.aliasExists(link);
 
         await this.linkResopitory.create(link);
 

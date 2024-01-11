@@ -26,7 +26,7 @@ const linkValidation = () => [
 ]
 
 linkRouter.post('/sendLink',
-    linkValidation(),  authMiddleware, validate, 
+    linkValidation(), authMiddleware, validate, 
     async (req: RequestWithBody<SignInDto>, res: Response) => {
         const foundUser = await linkService.saveLink(req.body)
         return res.status(StatusCodes.OK).json({ message: 'LINK' })

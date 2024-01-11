@@ -10,7 +10,7 @@ export interface ILinkRepository {
 
     create(link: ILinkProps): Promise<any>;
 
-    aliasExists(link: ILinkProps): Promise<boolean>;
+    aliasExists(alias: string): Promise<boolean>;
 
     originalExists(link: ILinkProps): Promise<boolean>;
 

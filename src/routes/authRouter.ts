@@ -164,13 +164,13 @@ authRouter.post('/signin',
     })
 
     // для проверки доступа анонимного/зарег пользователей
-authRouter.get('/links',
-    authMiddleware,
-    async (req: RequestWithBody<UsersPostBodyModel>, res: Response) => {  
-        try {
-            res.json({links:'links'})
-        } catch (e) {
-            console.log(e)
-            res.status(HTTP_Statuses.BAD_REQUEST_400).json({message: "some error"})
-        }
-    })
+// authRouter.get('/links',
+//     authMiddleware,
+//     async (req: RequestWithBody<UsersPostBodyModel>, res: Response) => {  
+//         try {
+//             res.json({links:'links'})
+//         } catch (e) {
+//             console.log(e)
+//             res.status(HTTP_Statuses.BAD_REQUEST_400).json({message: "some error"})
+//         }
+//     })

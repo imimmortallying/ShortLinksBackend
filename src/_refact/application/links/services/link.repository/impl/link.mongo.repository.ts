@@ -28,14 +28,14 @@ export default class MongooseLinkRepository implements ILinkRepository  {
         return;
     }
 
-    async aliasExists(link: ILinkProps): Promise<boolean> {
-        const alias = await getModel<ILinkProps>('link').exists({ alias: link.alias});
+    async aliasExists(alias: string): Promise<boolean> {
+        const foundAlias = await getModel<ILinkProps>('link').exists( {alias: alias} );
 
-        return alias !== null;
+        return foundAlias !== null;
     }
 
     async originalExists(link: ILinkProps): Promise<boolean>{
-        const original = await getModel<ILinkProps>('link').exists({ original: link.original});
+        const original = await getModel<ILinkProps>('link').exists({ original: link.original} );
 
         return original !== null;
     }
