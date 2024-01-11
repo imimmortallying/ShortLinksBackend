@@ -32,6 +32,13 @@ export class LinkService {
 
     async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon'}): Promise<EitherMessage> {
 
+
+
+        const hasLinkAlready = await this.linkResopitory.originalExists(cmd.link);
+        if (hasLinkAlready) {
+            return E.right(hasLinkAlready)
+        }
+
         // получился мутант с минимальной читаемостью, явно нарушающий все solid и тп принципы
         // я опять запутался что где лучше вызывать и где хранить
         // если бы я просто инкапсулировал модуль и обращался к нему по необходимости, мне не пришлось бы делать
@@ -54,9 +61,6 @@ export class LinkService {
             }
         );
 
-
-
-        // const aliasExists = this.linkResopitory.aliasExists(link);
 
         await this.linkResopitory.create(link);
 

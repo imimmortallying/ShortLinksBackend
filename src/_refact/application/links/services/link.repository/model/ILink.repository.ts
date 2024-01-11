@@ -12,7 +12,7 @@ export interface ILinkRepository {
 
     aliasExists(alias: string): Promise<boolean>;
 
-    originalExists(link: ILinkProps): Promise<boolean>;
+    originalExists(link: string): Promise<string|null>;
 
     createNextId(): string;
 
