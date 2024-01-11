@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 import { getModel } from '../../../../../configuration/configuration.mongo';
 import { ISessionRepository } from '../models/ISession.repository';
-import { ISessionGenerator } from '../models/ISession.generator';
+import { ITokensGenerator } from '../../../../../infra/tokens.generator/model/ITokens.generator';
 import { User } from '../../../../../domain';
 
 
 export default class MongooseSessionRepository implements ISessionRepository {
 
     constructor(
-        private sessionGenerator: ISessionGenerator,
+        private sessionGenerator: ITokensGenerator,
     ) { }
 
     async createSession(user: User): Promise<any> {

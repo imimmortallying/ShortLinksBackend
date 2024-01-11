@@ -10,7 +10,7 @@ import { linkService } from '../../../../application/links';
 
 const linkRouter = Router();
 
-interface SignInDto { link: string, user: string, }
+interface SignInDto { link: string, user: string, status: 'signedin' | 'anon'}
 
 const linkValidation = () => [
     body('link')
@@ -25,9 +25,10 @@ const linkValidation = () => [
 ]
 
 linkRouter.post('/sendLink',
-    linkValidation(), validate,
+    linkValidation(),  validate, 
     async (req: RequestWithBody<SignInDto>, res: Response) => {
-        const foundUser = await linkService.saveLink(req.body)
+        const accessToken = req.headers.authorization?.split(' ')[1];
+        const foundUser = await linkService.saveLink(req.body, accessToken)
         return res.status(StatusCodes.OK).json({ message: 'LINK' })
     }
 );

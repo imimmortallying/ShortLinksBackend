@@ -10,12 +10,10 @@ import { IAliasGenerator } from './alias.generator/model/IAliasGenerator';
 import * as E from 'fp-ts/Either'
 import { ILinkRepository } from './link.repository/model/ILink.repository';
 import { Link } from '../../../domain/link.model';
+import { ITokensGenerator } from '../../../infra/tokens.generator/model/ITokens.generator';
 
-export enum AuthServiceError {
-    UsernameIsTaken = 'Username already taken',
-    UserDoesNotExist = 'User does not exist',
-    CredentialFailure = 'Username or password is invalid',
-    CookieIsEmpty = 'Cookie is empty'
+export enum SessionValidationError {
+    EmptyAccessToken = 'empty access token',
 }
 
 export enum AuthServiceSuccessMessage {
@@ -26,16 +24,20 @@ export enum AuthServiceSuccessMessage {
 export class LinkService {
     constructor(
         private aliasGenerator: IAliasGenerator,
-        private sessionGenerator: ISessionRepository,
+        private tokensGenerator: ITokensGenerator,
         private linkResopitory: ILinkRepository
     ) { } // вспомни, почитай че это за скобки
     // прочитай про абстрактные классы. Хотя, и без них классы типизруются через I
 
 
+    async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon'}, accessToken: string): Promise<EitherMessage> {
 
-    async saveLink(cmd: { link: string, user: string }): Promise<any> {
-
-
+        // если статус = signedin, то нужно провалидировать токен
+        if (cmd.status === 'signedin' && !accessToken) return E.left(SessionValidationError.EmptyAccessToken);
+        if (cmd.status === 'signedin') {
+            const userData = this.tokensGenerator.validateAccessToken(accessToken)
+            console.log("USERDATA:", userData)
+        }
         const link = new Link(
             this.linkResopitory.createNextId(),
             {
