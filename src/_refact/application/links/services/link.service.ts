@@ -24,20 +24,20 @@ export enum AuthServiceSuccessMessage {
 export class LinkService {
     constructor(
         private aliasGenerator: IAliasGenerator,
-        private tokensGenerator: ITokensGenerator,
+        // private tokensGenerator: ITokensGenerator,
         private linkResopitory: ILinkRepository
     ) { } // вспомни, почитай че это за скобки
     // прочитай про абстрактные классы. Хотя, и без них классы типизруются через I
 
 
-    async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon'}, accessToken: string): Promise<EitherMessage> {
+    async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon'}): Promise<EitherMessage> {
 
         // если статус = signedin, то нужно провалидировать токен
-        if (cmd.status === 'signedin' && !accessToken) return E.left(SessionValidationError.EmptyAccessToken);
-        if (cmd.status === 'signedin') {
-            const userData = this.tokensGenerator.validateAccessToken(accessToken)
-            console.log("USERDATA:", userData)
-        }
+        // if (cmd.status === 'signedin' && !accessToken) return E.left(SessionValidationError.EmptyAccessToken);
+        // if (cmd.status === 'signedin') {
+        //     const userData = this.tokensGenerator.validateAccessToken(accessToken)
+        //     console.log("USERDATA:", userData.id)
+        // }
         const link = new Link(
             this.linkResopitory.createNextId(),
             {

@@ -7,6 +7,7 @@ import { validate } from '../../middlewares/api.middleware.validation';
 import { matchI } from 'ts-adt';
 import { AuthServiceError } from '../../../../application/auth/services/auth.service';
 import { linkService } from '../../../../application/links';
+import { authMiddleware } from '../../../../../middleweres/authMiddleware';
 
 const linkRouter = Router();
 
@@ -25,10 +26,9 @@ const linkValidation = () => [
 ]
 
 linkRouter.post('/sendLink',
-    linkValidation(),  validate, 
+    linkValidation(),  authMiddleware, validate, 
     async (req: RequestWithBody<SignInDto>, res: Response) => {
-        const accessToken = req.headers.authorization?.split(' ')[1];
-        const foundUser = await linkService.saveLink(req.body, accessToken)
+        const foundUser = await linkService.saveLink(req.body)
         return res.status(StatusCodes.OK).json({ message: 'LINK' })
     }
 );

@@ -1,6 +1,6 @@
 import { ITokensGenerator } from "../model/ITokens.generator";
 import config from "config"
-import jwt, { JwtPayload } from "jsonwebtoken"
+import jwt from "jsonwebtoken"
 
 interface Ikeys {
     JWT_ACCESS_SECRET: string,
@@ -9,9 +9,13 @@ interface Ikeys {
 
 const jwtKeys:Ikeys = config.get('jwtKeys');
 
+interface JwtPayload {
+    id: string,
+}
+
 export class TokensGenerator implements ITokensGenerator {
 
-    generate(id: string, username: string): { accessToken: string; refreshToken: string; } {
+    generate(username: string, id:string): { accessToken: string; refreshToken: string; } {
 
         const accessToken:string = jwt.sign({id, username}, jwtKeys.JWT_ACCESS_SECRET, { expiresIn: '30m' });
         const refreshToken = jwt.sign({id, username}, jwtKeys.JWT_REFRESH_SECRET, { expiresIn: '30d' });
@@ -20,8 +24,8 @@ export class TokensGenerator implements ITokensGenerator {
 
     validateRefreshToken(token:string) {
         try {
-            const userData = jwt.verify(token, jwtKeys.JWT_REFRESH_SECRET);
-            return userData;
+            const userData = jwt.verify(token, jwtKeys.JWT_REFRESH_SECRET) as JwtPayload;
+            return {id: userData.id};
         } catch (e) {
             return null;
         }
@@ -29,9 +33,9 @@ export class TokensGenerator implements ITokensGenerator {
 
     validateAccessToken(token:string){
         try {
-            const userData = jwt.verify(token, jwtKeys.JWT_ACCESS_SECRET);
+            const userData = jwt.verify(token, jwtKeys.JWT_ACCESS_SECRET) as JwtPayload;
             console.log("DATA", userData)
-            return userData;
+            return userData.id;
 
         } catch (e) {
             return null;
