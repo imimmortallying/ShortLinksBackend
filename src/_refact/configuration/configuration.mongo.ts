@@ -1,12 +1,19 @@
 import mongoose, { Model, Mongoose, Schema } from 'mongoose';
 import { IUserProps } from '../domain/user.model';
 import { ISessionProps } from '../application/auth/services/session.generator/models/ISession.repository';
+import { ILinkProps } from '../domain/link.model';
 
 const entitySchemas = new Map<string, Schema>();
 
 entitySchemas.set('user', new Schema<IUserProps>({
     username: String,
     password: String
+}));
+
+entitySchemas.set('link', new Schema<ILinkProps>({
+    alias: String,
+    original: String,
+    owner: String,
 }));
 
 entitySchemas.set('token', new Schema<ISessionProps>({
