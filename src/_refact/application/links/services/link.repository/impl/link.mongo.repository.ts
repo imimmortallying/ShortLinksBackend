@@ -8,6 +8,7 @@ interface ILinkProps {
     owner: string,
     original: string,
     alias: string,
+    id: string,
 }
 
 export default class MongooseLinkRepository implements ILinkRepository  {
@@ -18,7 +19,7 @@ export default class MongooseLinkRepository implements ILinkRepository  {
 
     async create(link: ILinkProps): Promise<any> {
         await getModel<ILinkProps>('link').create({
-            // id: mongoose.Types.ObjectId.createFromHexString(link.id),
+            id: mongoose.Types.ObjectId.createFromHexString(link.id),
             owner: link.owner,
             original: link.original,
             alias: link.alias,

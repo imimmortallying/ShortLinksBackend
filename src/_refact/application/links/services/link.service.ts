@@ -9,6 +9,7 @@ import { IAliasGenerator } from './alias.generator/model/IAliasGenerator';
 
 import * as E from 'fp-ts/Either'
 import { ILinkRepository } from './link.repository/model/ILink.repository';
+import { Link } from '../../../domain/link.model';
 
 export enum AuthServiceError {
     UsernameIsTaken = 'Username already taken',
@@ -32,25 +33,28 @@ export class LinkService {
 
 
 
-    // async registerUser(cmd: { username: string, password: string }): Promise<EitherMessage> {
-    //     if (await this.userRepository.exists(cmd.username)) {
+    async saveLink(cmd: { link: string, user: string }): Promise<any> {
 
-    //         return errorWithMessage(AuthServiceError.UsernameIsTaken);
-    //     }
 
-    //     const user = new User(
-    //         this.userRepository.createNextId(),
-    //         {
-    //             username: cmd.username,
-    //             password: await this.passwordHasher.hash(cmd.password)
-    //         }
-    //     );
+        const link = new Link(
+            this.linkResopitory.createNextId(),
+            {
+                alias: this.aliasGenerator.generate(5), // добавить await, чтобы alias generator не только создавал, но и проверял наличие alias в бд
+                original: cmd.link,
+                owner: cmd.user
+            }
+        );
 
-    //     await this.userRepository.create(user);
+        await this.linkResopitory.create(link);
 
-    //     logger.info('A new user has been signed in');
+        return
 
-    //     return successWithMessage(AuthServiceSuccessMessage.UserHasBeenSignedUp);
-    // }
+        //     await this.userRepository.create(user);
 
+        //     logger.info('A new user has been signed in');
+
+        //     return successWithMessage(AuthServiceSuccessMessage.UserHasBeenSignedUp);
+        // }
+
+    }
 }

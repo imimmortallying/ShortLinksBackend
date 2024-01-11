@@ -6,12 +6,11 @@ import { RequestWithBody } from '../../api.types';
 import { validate } from '../../middlewares/api.middleware.validation';
 import { matchI } from 'ts-adt';
 import { AuthServiceError } from '../../../../application/auth/services/auth.service';
-import { sessionValidation } from '../../middlewares/api.session.validation';
 import { linkService } from '../../../../application/links';
 
-const linksRouter = Router();
+const linkRouter = Router();
 
-interface SignInDto { username: string, password: string, }
+interface SignInDto { link: string, user: string, }
 
 const linkValidation = () => [
     body('link')
@@ -25,15 +24,14 @@ const linkValidation = () => [
         .withMessage('incorrect URL'),
 ]
 
-linksRouter.post('/sendLink',
-    linkValidation(), validate, sessionValidation,
+linkRouter.post('/sendLink',
+    linkValidation(), validate,
     async (req: RequestWithBody<SignInDto>, res: Response) => {
-
-        const foundUser = await linkService
-
+        const foundUser = await linkService.saveLink(req.body)
+        return res.status(StatusCodes.OK).json({ message: 'LINK' })
     }
 );
 
 
 
-export default linksRouter;
+export default linkRouter;

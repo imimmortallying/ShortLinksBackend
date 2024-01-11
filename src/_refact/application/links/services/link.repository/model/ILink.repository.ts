@@ -14,4 +14,6 @@ export interface ILinkRepository {
 
     originalExists(link: ILinkProps): Promise<boolean>;
 
+    createNextId(): string;
+
 }
