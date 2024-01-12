@@ -17,15 +17,15 @@ export default class MongooseLinkRepository implements ILinkRepository  {
         return new mongoose.Types.ObjectId().toString();
     }
 
-    async create(link: ILinkProps): Promise<any> {
-        await getModel<ILinkProps>('link').create({
+    async create(link: ILinkProps): Promise<string> {
+        const newLink = await getModel<ILinkProps>('link').create({
             id: mongoose.Types.ObjectId.createFromHexString(link.id),
             owner: link.owner,
             original: link.original,
             alias: link.alias,
         });
 
-        return;
+        return newLink.alias;
     }
 
     async aliasExists(alias: string): Promise<boolean> {

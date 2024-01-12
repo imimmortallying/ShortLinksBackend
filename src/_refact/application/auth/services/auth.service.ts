@@ -1,6 +1,6 @@
 import logger from '../../../core/core.logger.pino';
 
-import { EitherMessage, successWithMessage, errorWithMessage, EitherR } from '../../../core/core.result';
+import { EitherString, successWithMessage, errorWithMessage, EitherR } from '../../../core/core.result';
 import { User } from '../../../domain';
 import { IUserProps } from '../../../domain/user.model';
 import { ISessionRepository } from './session.generator/models/ISession.repository';
@@ -31,7 +31,7 @@ export class AuthService {
 
 
 
-    async registerUser(cmd: { username: string, password: string }): Promise<EitherMessage> {
+    async registerUser(cmd: { username: string, password: string }): Promise<EitherString> {
         if (await this.userRepository.exists(cmd.username)) {
 
             return errorWithMessage(AuthServiceError.UsernameIsTaken);
@@ -68,7 +68,7 @@ export class AuthService {
         return E.right(newSession);
     }
 
-    async deleteSession(cmd:{refreshToken:string}): Promise<EitherMessage> {
+    async deleteSession(cmd:{refreshToken:string}): Promise<EitherString> {
         
         if (cmd.refreshToken === undefined) {
             return E.left(AuthServiceError.CookieIsEmpty)

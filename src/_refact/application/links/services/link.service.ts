@@ -1,7 +1,6 @@
 import logger from '../../../core/core.logger.pino';
 
-import { EitherMessage, successWithMessage, errorWithMessage, EitherR } from '../../../core/core.result';
-import { ISessionRepository } from '../../auth/services/session.generator';
+import { EitherString } from '../../../core/core.result';
 import { IAliasGenerator } from './alias.generator/model/IAliasGenerator';
 
 
@@ -30,12 +29,11 @@ export class LinkService {
     // прочитай про абстрактные классы. Хотя, и без них классы типизруются через I
 
 
-    async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon'}): Promise<EitherMessage> {
-
-
+    async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon'}): Promise<EitherString> {
 
         const hasLinkAlready = await this.linkResopitory.originalExists(cmd.link);
         if (hasLinkAlready) {
+            logger.info('An existing link has been returned');
             return E.right(hasLinkAlready)
         }
 
@@ -61,14 +59,10 @@ export class LinkService {
             }
         );
 
+        const newAlias = await this.linkResopitory.create(link);
+        logger.info('A new link has been saved');
+        return E.right(newAlias)
 
-        await this.linkResopitory.create(link);
-
-        return
-
-        //     await this.userRepository.create(user);
-
-        //     logger.info('A new user has been signed in');
 
         //     return successWithMessage(AuthServiceSuccessMessage.UserHasBeenSignedUp);
         // }

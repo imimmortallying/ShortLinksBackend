@@ -4,14 +4,13 @@ import { authService } from '../../../../application/auth';
 import { StatusCodes } from '../../api.consts';
 import { RequestWithBody } from '../../api.types';
 import { validate } from '../../middlewares/api.middleware.validation';
-import { matchI } from 'ts-adt';
-import { AuthServiceError } from '../../../../application/auth/services/auth.service';
+
 import { linkService } from '../../../../application/links';
 import { authMiddleware } from '../../../../../middleweres/authMiddleware';
 
 const linkRouter = Router();
 
-interface SignInDto { link: string, user: string, status: 'signedin' | 'anon'}
+interface SendLinkDto { link: string, user: string, status: 'signedin' | 'anon' }
 
 const linkValidation = () => [
     body('link')
@@ -26,10 +25,14 @@ const linkValidation = () => [
 ]
 
 linkRouter.post('/sendLink',
-    linkValidation(), authMiddleware, validate, 
-    async (req: RequestWithBody<SignInDto>, res: Response) => {
-        const foundUser = await linkService.saveLink(req.body)
-        return res.status(StatusCodes.OK).json({ message: 'LINK' })
+    linkValidation(), authMiddleware, validate,
+    async (req: RequestWithBody<SendLinkDto>, res: Response) => {
+        const linkAlias = await linkService.saveLink(req.body);
+
+        return linkAlias._tag === 'Right'
+            ? res.status(StatusCodes.OK).json({ alias: linkAlias.right })
+            : res.status(StatusCodes.CONFLICT) // на уровне сервиса возврат ошибки не предусмотрен!
+
     }
 );
 
