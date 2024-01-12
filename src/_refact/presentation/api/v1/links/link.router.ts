@@ -47,6 +47,22 @@ sendLinkValidation(), authMiddleware, validate,
     }
 );
 
+interface AllLinksDto { user: string, status: 'signedin' | 'anon' }
+
+linkRouter.get('/allUsersLinks',
+authMiddleware, validate,
+    async (req: RequestWithBody<AllLinksDto>, res: Response) => {
+        const allUsersLinks = await linkService.findAllLinks(req.body);
+
+        // тот же вопрос, что и при создании ссылки. Какие тут могут быть ошибочные сценарии и что возвращать клиенту?
+        // сейчас возвращаю либо [], либо {alias:string}[]. Ошибки не предусмотрены
+        return allUsersLinks._tag === 'Right'
+            ? res.status(StatusCodes.OK).json({ links: allUsersLinks.right })
+            : res.status(StatusCodes.NO_CONTENT)
+
+    }
+);
+
 
 
 export default linkRouter;

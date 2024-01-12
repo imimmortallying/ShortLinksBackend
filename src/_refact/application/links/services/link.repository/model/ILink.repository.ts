@@ -14,6 +14,8 @@ export interface ILinkRepository {
 
     originalExists(link: string): Promise<string|null>;
 
+    findAllLinks(user: string): Promise< Array<{alias:string}> | null>;
+
     createNextId(): string;
 
 }

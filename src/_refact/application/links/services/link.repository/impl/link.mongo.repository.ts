@@ -11,7 +11,13 @@ interface ILinkProps {
     id: string,
 }
 
-export default class MongooseLinkRepository implements ILinkRepository  {
+interface IAllLinksProps {
+
+    alias: string,
+
+}
+
+export default class MongooseLinkRepository implements ILinkRepository {
 
     createNextId(): string {
         return new mongoose.Types.ObjectId().toString();
@@ -20,11 +26,10 @@ export default class MongooseLinkRepository implements ILinkRepository  {
     async create(link: ILinkProps, userStatus: 'anon' | 'signedin'): Promise<string> {
 
         // получаю статус из props, выставляю соотв. TTL
-        console.log('STATUS:', userStatus)
         let TTL;
         userStatus === 'anon'
-        ? TTL = Date.now() + 1000 * 60 * 60 * 24 * 5 // 5 дней для status = anon
-        : TTL = Date.now() + 1000 * 60 * 60 * 24 * 30 // 30 дней для status = signedin
+            ? TTL = Date.now() + 1000 * 60 * 60 * 24 * 5 // 5 дней для status = anon
+            : TTL = Date.now() + 1000 * 60 * 60 * 24 * 30 // 30 дней для status = signedin
 
         const newLink = await getModel<ILinkProps>('link').create({
             id: mongoose.Types.ObjectId.createFromHexString(link.id),
@@ -39,15 +44,22 @@ export default class MongooseLinkRepository implements ILinkRepository  {
     }
 
     async aliasExists(alias: string): Promise<boolean> {
-        const foundAlias = await getModel<ILinkProps>('link').exists( {alias: alias} );
+        const foundAlias = await getModel<ILinkProps>('link').exists({ alias: alias });
 
         return foundAlias !== null;
     }
 
-    async originalExists(link: string): Promise<string|null>{
-        const original = await getModel<ILinkProps>('link').findOne({ original: link} );
-        return original === null ? null : original.alias 
+    async originalExists(link: string): Promise<string | null> {
+        const original = await getModel<ILinkProps>('link').findOne({ original: link });
+        return original === null ? null : original.alias
         // return original.alias;
+    }
+
+
+    async findAllLinks(user: string): Promise<Array<{ alias: string }> | null> {
+        const allLinks = await getModel<IAllLinksProps>('link').find({ owner: user }).select({ alias: 1, _id: 0 });
+
+        return allLinks
     }
 
 }

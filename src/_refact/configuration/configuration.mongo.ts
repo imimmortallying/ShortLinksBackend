@@ -10,7 +10,11 @@ entitySchemas.set('user', new Schema<IUserProps>({
     password: String
 }));
 
-entitySchemas.set('link', new Schema<ILinkProps>({
+interface ILinkPropsWithTTL extends ILinkProps {
+    expireAt: {}
+}
+
+entitySchemas.set('link', new Schema<ILinkPropsWithTTL>({
     alias: String,
     original: String,
     owner: String,
