@@ -61,11 +61,7 @@ export class LinkService {
 
         const newAlias = await this.linkResopitory.create(link);
         logger.info('A new link has been saved');
-        return E.right(newAlias)
-
-
-        //     return successWithMessage(AuthServiceSuccessMessage.UserHasBeenSignedUp);
-        // }
+        return E.right(newAlias);
 
     }
 }

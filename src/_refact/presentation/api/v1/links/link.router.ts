@@ -12,7 +12,8 @@ const linkRouter = Router();
 
 interface SendLinkDto { link: string, user: string, status: 'signedin' | 'anon' }
 
-const linkValidation = () => [
+
+const sendLinkValidation = () => [
     body('link')
         .trim()
         .not()
@@ -22,10 +23,20 @@ const linkValidation = () => [
         .trim()
         .isURL()
         .withMessage('incorrect URL'),
+    body('user')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage('user field is required'),
+    body('status')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage('status field is required'),
 ]
 
 linkRouter.post('/sendLink',
-    linkValidation(), authMiddleware, validate,
+sendLinkValidation(), authMiddleware, validate,
     async (req: RequestWithBody<SendLinkDto>, res: Response) => {
         const linkAlias = await linkService.saveLink(req.body);
 
