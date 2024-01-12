@@ -8,7 +8,7 @@ interface ILinkProps {
 
 export interface ILinkRepository {
 
-    create(link: ILinkProps): Promise<any>;
+    create(link: ILinkProps, userStatus: 'anon' | 'signedin' ): Promise<any>;
 
     aliasExists(alias: string): Promise<boolean>;
 

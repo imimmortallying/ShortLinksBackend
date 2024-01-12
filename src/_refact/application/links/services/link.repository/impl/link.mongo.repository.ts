@@ -17,12 +17,22 @@ export default class MongooseLinkRepository implements ILinkRepository  {
         return new mongoose.Types.ObjectId().toString();
     }
 
-    async create(link: ILinkProps): Promise<string> {
+    async create(link: ILinkProps, userStatus: 'anon' | 'signedin'): Promise<string> {
+
+        // получаю статус из props, выставляю соотв. TTL
+        console.log('STATUS:', userStatus)
+        let TTL;
+        userStatus === 'anon'
+        ? TTL = Date.now() + 1000 * 60 * 60 * 24 * 5 // 5 дней для status = anon
+        : TTL = Date.now() + 1000 * 60 * 60 * 24 * 30 // 30 дней для status = signedin
+
         const newLink = await getModel<ILinkProps>('link').create({
             id: mongoose.Types.ObjectId.createFromHexString(link.id),
             owner: link.owner,
             original: link.original,
             alias: link.alias,
+            expireAt: TTL,
+
         });
 
         return newLink.alias;

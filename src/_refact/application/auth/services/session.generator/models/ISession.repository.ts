@@ -7,7 +7,7 @@ interface User {
 export interface ISessionProps {
     id: string,
     refreshToken: string,
-    expireAt: {}
+    expireAt: Date
 }
 
 export interface ISessionRepository {

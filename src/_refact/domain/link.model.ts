@@ -2,6 +2,7 @@ export interface ILinkProps {
     owner: string,
     original: string,
     alias: string,
+    
 }
 
 export class Link implements ILinkProps {
@@ -18,4 +19,5 @@ export class Link implements ILinkProps {
     get original(): string {
         return this.props.original;
     }
+
 }

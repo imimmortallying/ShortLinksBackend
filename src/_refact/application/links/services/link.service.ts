@@ -55,11 +55,12 @@ export class LinkService {
             {
                 alias: await checkAlias(5, this.aliasGenerator, this.linkResopitory), 
                 original: cmd.link,
-                owner: cmd.user
+                owner: cmd.user,
+
             }
         );
 
-        const newAlias = await this.linkResopitory.create(link);
+        const newAlias = await this.linkResopitory.create(link, cmd.status);
         logger.info('A new link has been saved');
         return E.right(newAlias);
 

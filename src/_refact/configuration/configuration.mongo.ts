@@ -14,6 +14,10 @@ entitySchemas.set('link', new Schema<ILinkProps>({
     alias: String,
     original: String,
     owner: String,
+    expireAt: {
+        type: Date,
+        default: undefined, 
+    },
 }));
 
 entitySchemas.set('token', new Schema<ISessionProps>({
@@ -21,7 +25,7 @@ entitySchemas.set('token', new Schema<ISessionProps>({
     refreshToken: String,
     expireAt: {
         type: Date,
-        default: Date.now() + 10 * 60 * 6000 * 24 * 30, // единственный вариант установки TTL, который сработал, остальные работают минуту
+        default: undefined // единственный вариант установки TTL, который сработал, остальные работают минуту
         // можно попробовать вынести в переменную. Тогда не забудь указать тут, при создании документа и при создании токена в генераторе одинаковые значения
         // по заданию время для ссылок должно задаваться относительно какого-то абсолютного времени дня, не забудь
     }
