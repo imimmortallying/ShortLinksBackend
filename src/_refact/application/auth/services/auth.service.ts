@@ -8,6 +8,7 @@ import { IUserRepository } from '../../users';
 import { IPasswordHasher } from './password.hasher/models/IPassword.hasher';
 
 import * as E from 'fp-ts/Either'
+import { ITokensGenerator } from '../../../infra/tokens.generator/model/ITokens.generator';
 
 export enum AuthServiceError {
     UsernameIsTaken = 'Username already taken',
@@ -21,11 +22,17 @@ export enum AuthServiceSuccessMessage {
     UserHasBeenSignedOut = 'User has been signed out',
 }
 
+export enum AuthServiceErrorMessage {
+    RefreshTokenValidationError = 'Refresh token validation error',
+    NoResfreshTokenInDB = 'Refresh token not found in DB',
+}
+
 export class AuthService {
     constructor(
         private userRepository: IUserRepository,
         private sessionRepository: ISessionRepository,
-        private passwordHasher: IPasswordHasher
+        private passwordHasher: IPasswordHasher,
+        private tokensGenerator: ITokensGenerator,
     ) { } // вспомни, почитай че это за скобки
     // прочитай про абстрактные классы. Хотя, и без них классы типизруются через I
 
@@ -62,10 +69,10 @@ export class AuthService {
         if (await this.passwordHasher.verify(cmd.password, user.password) == false) {
             return E.left(AuthServiceError.CredentialFailure);
         }
+        const { accessToken, refreshToken } = this.tokensGenerator.generate(user.id, user.username)
+        const newSession = await this.sessionRepository.createSession(user.id, refreshToken)
 
-        const newSession = await this.sessionRepository.createSession(user)
-
-        return E.right(newSession);
+        return E.right({accessToken, refreshToken});
     }
 
     async deleteSession(cmd:{refreshToken:string}): Promise<EitherString> {
@@ -78,6 +85,26 @@ export class AuthService {
         return foundSession === true
             ? E.right(AuthServiceSuccessMessage.UserHasBeenSignedOut)
             : E.left(AuthServiceError.UserDoesNotExist) // какая должна быть ошибка и нужна ли она. Она возникает, если не нашлось совпадений для удаления
+
+    }
+
+    async refreshSession(oldRefreshToken:string): Promise<EitherR<{ accessToken: string, refreshToken: string, username: string }>> {
+
+        
+
+        const userData =  this.tokensGenerator.validateRefreshToken(oldRefreshToken) as {id:string, username: string};
+        console.log('USERDATA:', userData)
+        if (!userData ) return E.left(AuthServiceErrorMessage.RefreshTokenValidationError);
+        
+        const isExistingInDB = await this.sessionRepository.findSession(oldRefreshToken);
+        console.log('isExistingInDB:', isExistingInDB)
+        if (!isExistingInDB) return E.left(AuthServiceErrorMessage.NoResfreshTokenInDB);
+        
+        const { accessToken, refreshToken } = this.tokensGenerator.generate(userData.id, userData.username); //!
+
+        const newSession = await this.sessionRepository.createSession(userData.id, refreshToken);
+
+        return E.right({accessToken, refreshToken, username:userData.username})
 
     }
 

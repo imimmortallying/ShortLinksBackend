@@ -54,7 +54,7 @@ authRouter.post('/signin',
             ? res.status(StatusCodes.NOT_FOUND).json({ message: foundUser.left })
             : res
                 .cookie('refreshToken', foundUser.right.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
-                .json({ accessToken: foundUser.right.accessToken, user:{username:req.body.username} }) //в прошлой версии я возвращал еще и username. Сопоставить с фронтом
+                .json({ accessToken: foundUser.right.accessToken, user: { username: req.body.username } }) //в прошлой версии я возвращал еще и username. Сопоставить с фронтом
                 .status(StatusCodes.OK)
 
         // добавить коллекцию токенов, чтобы проверить, работает ли модель, потом убрать отсюда
@@ -70,13 +70,27 @@ authRouter.delete('/signout',
 
         const deletedSession = await authService.deleteSession(req.cookies)
 
-         return deletedSession._tag === "Left"
-             ? res.status(StatusCodes.UNAUTHORIZED).json({ message: deletedSession.left })
-             : res
-                 .clearCookie('refreshToken')
-                 .json({ message: deletedSession.right })
-                 .status(StatusCodes.OK)
+        return deletedSession._tag === "Left"
+            ? res.status(StatusCodes.UNAUTHORIZED).json({ message: deletedSession.left })
+            : res
+                .clearCookie('refreshToken')
+                .json({ message: deletedSession.right })
+                .status(StatusCodes.OK)
     }
 )
+
+authRouter.get('/refresh',
+    async (req: Request, res: Response) => {
+        const { refreshToken } = req.cookies;
+        const newSession = await authService.refreshSession(refreshToken);
+
+        return newSession._tag === 'Right'
+            ? res.cookie('refreshToken', newSession.right.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+                .json({ accessToken: newSession.right.accessToken, user: { username: newSession.right.username } }) //в прошлой версии я возвращал еще и username. Сопоставить с фронтом
+                .status(StatusCodes.OK)
+            : res.status(StatusCodes.UNAUTHORIZED).json({ message: newSession.left })
+    }
+)
+
 
 export default authRouter;
