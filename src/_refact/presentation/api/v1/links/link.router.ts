@@ -79,7 +79,7 @@ linkRouter.post('/redirect',
 
     async (req: RequestWithBody<{alias:string}>, res: Response) => {
 
-        const foundLink = await linkService.findOriginalLink(req.body);
+        const foundLink = await linkService.redirect(req.body);
 
         return foundLink._tag === 'Right'
             ? res.status(StatusCodes.OK).json({ foundLink: foundLink.right })

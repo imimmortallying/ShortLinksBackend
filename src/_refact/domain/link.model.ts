@@ -2,6 +2,7 @@ export interface ILinkProps {
     owner: string,
     original: string,
     alias: string,
+
     // expireAt: {}
 }
 
@@ -19,6 +20,7 @@ export class Link implements ILinkProps {
     get original(): string {
         return this.props.original;
     }
+
 
     // get expireAt(): {} {
     //     return this.props.expireAt;

@@ -12,7 +12,7 @@ export interface ILinkRepository {
 
     findNewestLink(userid: string): Promise<string | null>;
 
-    findOriginalLink(alias: string): Promise<string | null>;
+    findOriginalLinkAndUpdate(alias: string): Promise<string | null>;
 
     aliasExists(alias: string): Promise<boolean>;
 
@@ -21,5 +21,6 @@ export interface ILinkRepository {
     findAllLinks(user: string): Promise< {alias:string}[] | null>;
 
     createNextId(): string;
+
 
 }

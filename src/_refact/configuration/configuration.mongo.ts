@@ -15,10 +15,17 @@ interface ILinkPropsWithTTL extends ILinkProps {
     createdAt: Date,
 }
 
-entitySchemas.set('link', new Schema<ILinkPropsWithTTL>({
+interface ILinkPropsWithCount extends ILinkPropsWithTTL {
+    clicksCount: number,
+    visitors : string[]
+}
+
+entitySchemas.set('link', new Schema<ILinkPropsWithCount>({
     alias: String,
     original: String,
     owner: String,
+    clicksCount: Number,
+    visitors: Array<string>,
     expireAt: {
         type: Date,
         default: undefined, 

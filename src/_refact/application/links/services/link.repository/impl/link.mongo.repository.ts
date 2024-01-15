@@ -38,15 +38,17 @@ export default class MongooseLinkRepository implements ILinkRepository {
             alias: link.alias,
             expireAt: TTL,
             createdAt: Date.now(),
+            clicksCount: 0,
 
         });
         return newLink === null ? false : true
     }
 
-    async findOriginalLink(alias: string): Promise<string | null> {
+    async findOriginalLinkAndUpdate(alias: string): Promise<string | null> {
         const foundLink = await getModel<ILinkProps>('link')
-        .findOne({alias:alias}, {original: 1, _id: 0})
-        console.log('foundLink:', foundLink)
+        .findOneAndUpdate({alias:alias}, {$inc: {clicksCount: 1} })
+        .select({ original: 1, count: 1, _id: 0 })
+
         return foundLink === null ? null : foundLink.original;
 
     }

@@ -16,7 +16,7 @@ export enum QueryMessage {
 }
 
 export enum QueryErrorMessage {
-    LinkDoesntExist = "Link doesn't exist",
+    LinkDoesntExist = 'Link doesnt exist',
 }
 
 export class LinkService {
@@ -82,9 +82,11 @@ export class LinkService {
 
     }
 
-    async findOriginalLink(cmd:{alias: string} ): Promise<EitherString> {
-        const foundOriginalLink = await this.linkResopitory.findOriginalLink(cmd.alias);
+    async redirect(cmd:{alias: string} ): Promise<EitherString> {
+        const foundOriginalLink = await this.linkResopitory.findOriginalLinkAndUpdate(cmd.alias);
         
+
+
         return foundOriginalLink === null 
         ? E.left(QueryErrorMessage.LinkDoesntExist)
         : E.right(foundOriginalLink)
