@@ -52,6 +52,6 @@ export const authMiddleware = (req: RequestWithBody<SendLinkDto>, res: Response,
         return next();
     } catch (e) {
         console.log(e)
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Неизвестная ошибка при авторизации" })
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Неизвестная ошибка при авторизации' })
     }
 }

@@ -100,7 +100,7 @@ export class AuthService {
         console.log('isExistingInDB:', isExistingInDB)
         if (!isExistingInDB) return E.left(AuthServiceErrorMessage.NoResfreshTokenInDB);
         
-        const { accessToken, refreshToken } = this.tokensGenerator.generate(userData.id, userData.username); //!
+        const { accessToken, refreshToken } = this.tokensGenerator.generate(userData.id, userData.username);
 
         const newSession = await this.sessionRepository.createSession(userData.id, refreshToken);
 

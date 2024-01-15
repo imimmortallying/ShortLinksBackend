@@ -11,7 +11,8 @@ entitySchemas.set('user', new Schema<IUserProps>({
 }));
 
 interface ILinkPropsWithTTL extends ILinkProps {
-    expireAt: {}
+    expireAt: Date,
+    createdAt: Date,
 }
 
 entitySchemas.set('link', new Schema<ILinkPropsWithTTL>({
@@ -19,6 +20,10 @@ entitySchemas.set('link', new Schema<ILinkPropsWithTTL>({
     original: String,
     owner: String,
     expireAt: {
+        type: Date,
+        default: undefined, 
+    },
+    createdAt: {
         type: Date,
         default: undefined, 
     },

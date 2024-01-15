@@ -49,7 +49,7 @@ sendLinkValidation(), authMiddleware, validate,
 
 interface AllLinksDto { user: string, status: 'signedin' | 'anon' }
 
-linkRouter.get('/allUsersLinks',
+linkRouter.post('/allUsersLinks',
 authMiddleware, validate,
     async (req: RequestWithBody<AllLinksDto>, res: Response) => {
         const allUsersLinks = await linkService.findAllLinks(req.body);
@@ -58,6 +58,22 @@ authMiddleware, validate,
         // сейчас возвращаю либо [], либо {alias:string}[]. Ошибки не предусмотрены
         return allUsersLinks._tag === 'Right'
             ? res.status(StatusCodes.OK).json({ links: allUsersLinks.right })
+            : res.status(StatusCodes.NO_CONTENT)
+
+    }
+);
+
+interface NewestLinkDto { user: string }
+
+
+linkRouter.get('/findNewestLink',
+authMiddleware, validate,
+    async (req: Request, res: Response) => {
+
+        const foundLink = await linkService.findNewestLink(req.body);
+
+        return foundLink._tag === 'Right'
+            ? res.status(StatusCodes.OK).json({ alias: foundLink.right })
             : res.status(StatusCodes.NO_CONTENT)
 
     }

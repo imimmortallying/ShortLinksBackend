@@ -37,10 +37,26 @@ export default class MongooseLinkRepository implements ILinkRepository {
             original: link.original,
             alias: link.alias,
             expireAt: TTL,
+            createdAt: Date.now(),
 
         });
 
         return newLink.alias;
+    }
+
+    async findNewestLink(userid: string): Promise<any> {
+        const foundLink = await getModel<ILinkProps>('link')
+        .find({owner:userid})
+        .sort({createdAt:-1})
+        .select({ alias: 1, _id: 0 })
+        .limit(1)
+
+        
+        if (foundLink.length > 0) {
+            return foundLink[0].alias;
+          } else {
+            return null;
+          }
     }
 
     async aliasExists(alias: string): Promise<boolean> {

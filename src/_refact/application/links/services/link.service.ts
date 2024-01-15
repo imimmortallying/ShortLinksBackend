@@ -61,11 +61,20 @@ export class LinkService {
 
     }
 
-    async findAllLinks(cmd: { user: string, status: 'signedin' | 'anon' }): Promise<EitherR<{ alias: string }[]>> {
-        const allFoundLinks = await this.linkResopitory.findAllLinks(cmd.user);
-        console.log('all:', allFoundLinks)
 
-        return E.right(allFoundLinks);
+    async findAllLinks(cmd: { user: string, status: 'signedin' | 'anon' }): Promise<EitherR<string[]>> {
+        const allFoundLinks = await this.linkResopitory.findAllLinks(cmd.user);
+
+        const flattenLinks = allFoundLinks.map(el=>el.alias)
+        return E.right(flattenLinks);
+        // какая может быть ошибка?
+
+    }
+
+    async findNewestLink(cmd:{user: string} ): Promise<EitherString> {
+        const foundNwewstLink = await this.linkResopitory.findNewestLink(cmd.user);
+
+        return E.right(foundNwewstLink);
         // какая может быть ошибка?
 
     }
