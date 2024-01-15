@@ -13,6 +13,7 @@ import { ITokensGenerator } from '../../../infra/tokens.generator/model/ITokens.
 
 export enum QueryMessage {
     UserHaveNoLinks = 'User have no links',
+    NewLinkHasBeenCreated = 'New link has been created',
 }
 
 export class LinkService {
@@ -26,10 +27,10 @@ export class LinkService {
 
     async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon' }): Promise<EitherString> {
 
-        const hasLinkAlready = await this.linkResopitory.originalExists(cmd.link);
+        const hasLinkAlready = await this.linkResopitory.updateExistingLinkCreationAt(cmd.link);
         if (hasLinkAlready) {
             logger.info('An existing link has been returned');
-            return E.right(hasLinkAlready)
+            return E.right(QueryMessage.NewLinkHasBeenCreated)
         }
 
         // получился мутант с минимальной читаемостью, явно нарушающий все solid и тп принципы
@@ -56,8 +57,7 @@ export class LinkService {
         );
 
         const newAlias = await this.linkResopitory.create(link, cmd.status);
-        logger.info('A new link has been saved');
-        return E.right(newAlias);
+        if (newAlias) return E.right(QueryMessage.NewLinkHasBeenCreated);
 
     }
 

@@ -41,7 +41,7 @@ sendLinkValidation(), authMiddleware, validate,
         const linkAlias = await linkService.saveLink(req.body);
 
         return linkAlias._tag === 'Right'
-            ? res.status(StatusCodes.OK).json({ alias: linkAlias.right })
+            ? res.status(StatusCodes.CREATED).json({ message: linkAlias.right })
             : res.status(StatusCodes.CONFLICT) // на уровне сервиса возврат ошибки не предусмотрен!
 
     }
@@ -57,7 +57,7 @@ authMiddleware, validate,
         // тот же вопрос, что и при создании ссылки. Какие тут могут быть ошибочные сценарии и что возвращать клиенту?
         // сейчас возвращаю либо [], либо {alias:string}[]. Ошибки не предусмотрены
         return allUsersLinks._tag === 'Right'
-            ? res.status(StatusCodes.OK).json({ links: allUsersLinks.right })
+            ? res.status(StatusCodes.OK).json({ message: allUsersLinks.right })
             : res.status(StatusCodes.NO_CONTENT)
 
     }

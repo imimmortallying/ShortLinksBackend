@@ -23,7 +23,7 @@ export default class MongooseLinkRepository implements ILinkRepository {
         return new mongoose.Types.ObjectId().toString();
     }
 
-    async create(link: ILinkProps, userStatus: 'anon' | 'signedin'): Promise<string> {
+    async create(link: ILinkProps, userStatus: 'anon' | 'signedin'): Promise<boolean> {
 
         // получаю статус из props, выставляю соотв. TTL
         let TTL;
@@ -40,8 +40,7 @@ export default class MongooseLinkRepository implements ILinkRepository {
             createdAt: Date.now(),
 
         });
-
-        return newLink.alias;
+        return newLink === null ? false : true
     }
 
     async findNewestLink(userid: string): Promise<any> {
@@ -65,9 +64,9 @@ export default class MongooseLinkRepository implements ILinkRepository {
         return foundAlias !== null;
     }
 
-    async originalExists(link: string): Promise<string | null> {
-        const original = await getModel<ILinkProps>('link').findOne({ original: link });
-        return original === null ? null : original.alias
+    async updateExistingLinkCreationAt(link: string): Promise<boolean> {
+        const original = await getModel<ILinkProps>('link').findOneAndUpdate({ original: link }, {createdAt: Date.now()});
+        return original === null ? false : true
         // return original.alias;
     }
 

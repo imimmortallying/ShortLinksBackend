@@ -8,13 +8,13 @@ interface ILinkProps {
 
 export interface ILinkRepository {
 
-    create(link: ILinkProps, userStatus: 'anon' | 'signedin' ): Promise<any>;
+    create(link: ILinkProps, userStatus: 'anon' | 'signedin' ): Promise<boolean>;
 
     findNewestLink(userid: string): Promise<string | null>;
 
     aliasExists(alias: string): Promise<boolean>;
 
-    originalExists(link: string): Promise<string|null>;
+    updateExistingLinkCreationAt(link: string): Promise<boolean>;
 
     findAllLinks(user: string): Promise< {alias:string}[] | null>;
 
