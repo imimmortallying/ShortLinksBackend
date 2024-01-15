@@ -1,6 +1,5 @@
 import { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
-import { authService } from '../../../../application/auth';
 import { StatusCodes } from '../../api.consts';
 import { RequestWithBody } from '../../api.types';
 import { validate } from '../../middlewares/api.middleware.validation';
@@ -57,19 +56,16 @@ authMiddleware, validate,
         // тот же вопрос, что и при создании ссылки. Какие тут могут быть ошибочные сценарии и что возвращать клиенту?
         // сейчас возвращаю либо [], либо {alias:string}[]. Ошибки не предусмотрены
         return allUsersLinks._tag === 'Right'
-            ? res.status(StatusCodes.OK).json({ message: allUsersLinks.right })
+            ? res.status(StatusCodes.OK).json({ links: allUsersLinks.right })
             : res.status(StatusCodes.NO_CONTENT)
 
     }
 );
 
-interface NewestLinkDto { user: string }
-
-
-linkRouter.get('/findNewestLink',
+linkRouter.post('/findNewestLink',
 authMiddleware, validate,
     async (req: Request, res: Response) => {
-
+        // res.json({req})
         const foundLink = await linkService.findNewestLink(req.body);
 
         return foundLink._tag === 'Right'
