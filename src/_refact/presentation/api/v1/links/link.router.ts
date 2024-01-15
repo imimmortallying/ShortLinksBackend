@@ -70,6 +70,19 @@ authMiddleware, validate,
 
         return foundLink._tag === 'Right'
             ? res.status(StatusCodes.OK).json({ alias: foundLink.right })
+            : res.status(StatusCodes.NOT_FOUND).json({message: foundLink.left})
+
+    }
+);
+
+linkRouter.post('/redirect',
+
+    async (req: RequestWithBody<{alias:string}>, res: Response) => {
+
+        const foundLink = await linkService.findOriginalLink(req.body);
+
+        return foundLink._tag === 'Right'
+            ? res.status(StatusCodes.OK).json({ foundLink: foundLink.right })
             : res.status(StatusCodes.NO_CONTENT)
 
     }

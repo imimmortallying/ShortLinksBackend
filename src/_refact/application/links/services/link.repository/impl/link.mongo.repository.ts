@@ -43,6 +43,14 @@ export default class MongooseLinkRepository implements ILinkRepository {
         return newLink === null ? false : true
     }
 
+    async findOriginalLink(alias: string): Promise<string | null> {
+        const foundLink = await getModel<ILinkProps>('link')
+        .findOne({alias:alias}, {original: 1, _id: 0})
+        console.log('foundLink:', foundLink)
+        return foundLink === null ? null : foundLink.original;
+
+    }
+
     async findNewestLink(userid: string): Promise<any> {
         const foundLink = await getModel<ILinkProps>('link')
         .find({owner:userid})

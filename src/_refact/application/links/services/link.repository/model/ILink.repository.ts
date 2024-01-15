@@ -12,6 +12,8 @@ export interface ILinkRepository {
 
     findNewestLink(userid: string): Promise<string | null>;
 
+    findOriginalLink(alias: string): Promise<string | null>;
+
     aliasExists(alias: string): Promise<boolean>;
 
     updateExistingLinkCreationAt(link: string): Promise<boolean>;

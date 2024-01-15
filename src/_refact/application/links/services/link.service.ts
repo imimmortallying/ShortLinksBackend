@@ -9,11 +9,14 @@ import { IAliasGenerator } from './alias.generator/model/IAliasGenerator';
 import * as E from 'fp-ts/Either'
 import { ILinkRepository } from './link.repository/model/ILink.repository';
 import { Link } from '../../../domain/link.model';
-import { ITokensGenerator } from '../../../infra/tokens.generator/model/ITokens.generator';
 
 export enum QueryMessage {
     UserHaveNoLinks = 'User have no links',
     NewLinkHasBeenCreated = 'New link has been created',
+}
+
+export enum QueryErrorMessage {
+    LinkDoesntExist = "Link doesn't exist",
 }
 
 export class LinkService {
@@ -39,7 +42,7 @@ export class LinkService {
         // такие конструкции. Когда нужна эта инкапсуляция класса в классе?
         async function checkAlias(length: number, aliasGenerator: IAliasGenerator, linkResopitory: ILinkRepository) {
             let result = aliasGenerator.generate(length)
-            let hasAlias = await linkResopitory.aliasExists(result);
+            const hasAlias = await linkResopitory.aliasExists(result);
             if (hasAlias) {
                 result = this.aliasGenerator.generate(length);
             }
@@ -75,6 +78,16 @@ export class LinkService {
         const foundNwewstLink = await this.linkResopitory.findNewestLink(cmd.user);
 
         return E.right(foundNwewstLink);
+        // какая может быть ошибка?
+
+    }
+
+    async findOriginalLink(cmd:{alias: string} ): Promise<EitherString> {
+        const foundOriginalLink = await this.linkResopitory.findOriginalLink(cmd.alias);
+        
+        return foundOriginalLink === null 
+        ? E.left(QueryErrorMessage.LinkDoesntExist)
+        : E.right(foundOriginalLink)
         // какая может быть ошибка?
 
     }
