@@ -12,7 +12,7 @@ export interface ILinkRepository {
 
     findNewestLink(userid: string): Promise<string | null>;
 
-    findOriginalLinkAndUpdate(alias: string): Promise<string | null>;
+    findOriginalLinkAndUpdate(cmd:{alias: string, visitor: string}): Promise<string | null>;
 
     aliasExists(alias: string): Promise<boolean>;
 

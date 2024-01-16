@@ -82,8 +82,8 @@ export class LinkService {
 
     }
 
-    async redirect(cmd:{alias: string} ): Promise<EitherString> {
-        const foundOriginalLink = await this.linkResopitory.findOriginalLinkAndUpdate(cmd.alias);
+    async redirect(cmd:{alias: string, visitor: string} ): Promise<EitherString> {
+        const foundOriginalLink = await this.linkResopitory.findOriginalLinkAndUpdate(cmd);
         
 
 

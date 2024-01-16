@@ -78,8 +78,8 @@ authMiddleware, validate,
 linkRouter.post('/redirect',
 
     async (req: RequestWithBody<{alias:string}>, res: Response) => {
-
-        const foundLink = await linkService.redirect(req.body);
+        const visitorIp = req.socket.remoteAddress;
+        const foundLink = await linkService.redirect({alias: req.body.alias, visitor: visitorIp});
 
         return foundLink._tag === 'Right'
             ? res.status(StatusCodes.OK).json({ foundLink: foundLink.right })
