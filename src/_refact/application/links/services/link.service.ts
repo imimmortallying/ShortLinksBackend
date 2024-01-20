@@ -17,6 +17,7 @@ export enum QueryMessage {
 
 export enum QueryErrorMessage {
     LinkDoesntExist = 'Link doesnt exist',
+    CouldntCreateLink = 'Couldnt create link',
 }
 
 export class LinkService {
@@ -28,12 +29,12 @@ export class LinkService {
     // прочитай про абстрактные классы. Хотя, и без них классы типизруются через I
 
 
-    async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon' }): Promise<EitherString> {
+    async saveLink(cmd: { link: string, user: string, status: 'signedin' | 'anon', TTL: number|'permanent' }): Promise<EitherString> {
 
-        const hasLinkAlready = await this.linkResopitory.updateExistingLinkCreationAt(cmd.link);
+        const hasLinkAlready = await this.linkResopitory.updateExistingLinkCreationAtAndReturn(cmd.link);
         if (hasLinkAlready) {
             logger.info('An existing link has been returned');
-            return E.right(QueryMessage.NewLinkHasBeenCreated)
+            return E.right(hasLinkAlready)
         }
 
         // получился мутант с минимальной читаемостью, явно нарушающий все solid и тп принципы
@@ -59,8 +60,8 @@ export class LinkService {
             }
         );
 
-        const newAlias = await this.linkResopitory.create(link, cmd.status);
-        if (newAlias) return E.right(QueryMessage.NewLinkHasBeenCreated);
+        const newAlias = await this.linkResopitory.create(link, cmd.status, cmd.TTL);
+        return newAlias ? E.right(newAlias) : E.left(QueryErrorMessage.CouldntCreateLink)
 
     }
 

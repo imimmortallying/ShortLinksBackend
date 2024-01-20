@@ -23,25 +23,29 @@ export default class MongooseLinkRepository implements ILinkRepository {
         return new mongoose.Types.ObjectId().toString();
     }
 
-    async create(link: ILinkProps, userStatus: 'anon' | 'signedin'): Promise<boolean> {
+    async create(link: ILinkProps, userStatus: 'anon' | 'signedin', TTL: number | 'permanent'): Promise<string | null> {
 
         // получаю статус из props, выставляю соотв. TTL
-        let TTL;
-        userStatus === 'anon'
-            ? TTL = Date.now() + 1000 * 60 * 60 * 24 * 5 // 5 дней для status = anon
-            : TTL = Date.now() + 1000 * 60 * 60 * 24 * 30 // 30 дней для status = signedin
+        let newTTL;
+        if (TTL === 'permanent') {newTTL = null}
+        else {
+            userStatus === 'anon'
+            ? newTTL = Date.now() + 1000 * 60 * 60 * 24 * 5 // 5 дней для status = anon
+            : newTTL = Date.now() + 1000 * 60 * 60 * 24 * TTL // 30 дней для status = signedin
+        }
+        
 
         const newLink = await getModel<ILinkProps>('link').create({
             id: mongoose.Types.ObjectId.createFromHexString(link.id),
             owner: link.owner,
             original: link.original,
             alias: link.alias,
-            expireAt: TTL,
+            expireAt: newTTL,
             createdAt: Date.now(),
             clicksCount: 0,
 
         });
-        return newLink === null ? false : true
+        return newLink === null ? null : newLink.alias
     }
 
     async findOriginalLinkAndUpdate(cmd:{alias: string, visitor: string}): Promise<string | null> {
@@ -60,7 +64,7 @@ export default class MongooseLinkRepository implements ILinkRepository {
         .select({ alias: 1, _id: 0 })
         .limit(1)
 
-        
+
         if (foundLink.length > 0) {
             return foundLink[0].alias;
           } else {
@@ -74,9 +78,9 @@ export default class MongooseLinkRepository implements ILinkRepository {
         return foundAlias !== null;
     }
 
-    async updateExistingLinkCreationAt(link: string): Promise<boolean> {
+    async updateExistingLinkCreationAtAndReturn(link: string): Promise<string | null> {
         const original = await getModel<ILinkProps>('link').findOneAndUpdate({ original: link }, {createdAt: Date.now()});
-        return original === null ? false : true
+        return original === null ? null : original.alias
         // return original.alias;
     }
 

@@ -9,7 +9,7 @@ import { authMiddleware } from '../../../../../middleweres/authMiddleware';
 
 const linkRouter = Router();
 
-interface SendLinkDto { link: string, user: string, status: 'signedin' | 'anon' }
+interface SendLinkDto { link: string, user: string, status: 'signedin' | 'anon', TTL: number | 'permanent' }
 
 
 const sendLinkValidation = () => [
@@ -40,7 +40,7 @@ sendLinkValidation(), authMiddleware, validate,
         const linkAlias = await linkService.saveLink(req.body);
 
         return linkAlias._tag === 'Right'
-            ? res.status(StatusCodes.CREATED).json({ message: linkAlias.right })
+            ? res.status(StatusCodes.CREATED).json({ alias: linkAlias.right })
             : res.status(StatusCodes.CONFLICT) // на уровне сервиса возврат ошибки не предусмотрен!
 
     }
