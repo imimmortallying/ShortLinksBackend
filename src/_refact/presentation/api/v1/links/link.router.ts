@@ -62,31 +62,31 @@ authMiddleware, validate,
     }
 );
 
-linkRouter.post('/findNewestLink',
-authMiddleware, validate,
-    async (req: Request, res: Response) => {
-        // res.json({req})
-        const foundLink = await linkService.findNewestLink(req.body);
+// linkRouter.post('/findNewestLink',
+// authMiddleware, validate,
+//     async (req: Request, res: Response) => {
+//         // res.json({req})
+//         const foundLink = await linkService.findNewestLink(req.body);
 
-        return foundLink._tag === 'Right'
-            ? res.status(StatusCodes.OK).json({ alias: foundLink.right })
-            : res.status(StatusCodes.NOT_FOUND).json({message: foundLink.left})
+//         return foundLink._tag === 'Right'
+//             ? res.status(StatusCodes.OK).json({ alias: foundLink.right })
+//             : res.status(StatusCodes.NOT_FOUND).json({message: foundLink.left})
 
-    }
-);
+//     }
+// );
 
-linkRouter.post('/redirect',
+// linkRouter.post('/redirect',
 
-    async (req: RequestWithBody<{alias:string}>, res: Response) => {
-        const visitorIp = req.socket.remoteAddress;
-        const foundLink = await linkService.redirect({alias: req.body.alias, visitor: visitorIp});
+//     async (req: RequestWithBody<{alias:string}>, res: Response) => {
+//         const visitorIp = req.socket.remoteAddress;
+//         const foundLink = await linkService.redirect({alias: req.body.alias, visitor: visitorIp});
 
-        return foundLink._tag === 'Right'
-            ? res.status(StatusCodes.OK).json({ foundLink: foundLink.right })
-            : res.status(StatusCodes.NO_CONTENT)
+//         return foundLink._tag === 'Right'
+//             ? res.status(StatusCodes.OK).json({ foundLink: foundLink.right })
+//             : res.status(StatusCodes.NO_CONTENT)
 
-    }
-);
+//     }
+// );
 
 
 

@@ -41,7 +41,7 @@ export class AuthService {
     async registerUser(cmd: { username: string, password: string }): Promise<EitherString> {
         if (await this.userRepository.exists(cmd.username)) {
 
-            return errorWithMessage(AuthServiceError.UsernameIsTaken);
+            return E.left(AuthServiceError.UsernameIsTaken);
         }
 
         const user = new User(

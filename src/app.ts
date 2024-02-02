@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import pinoHttp, { Options as LoggerOptions } from 'pino-http';
 import logger from './_refact/core/core.logger.pino';
 import v1Router from './_refact/presentation/api/v1/api.v1.router';
+import redirectRouter from './_refact/presentation/api/v1/redirect/redirect.router';
 
 const loggerOptions: LoggerOptions = {
   logger: logger,
@@ -22,5 +23,6 @@ app.use(cors(corsOptions));
 app.use(helmet())
 
 app.use('/api/v1', v1Router);
+app.use('/', redirectRouter);
 
 export default app;
