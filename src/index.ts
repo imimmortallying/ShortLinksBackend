@@ -1,5 +1,5 @@
-import { configureMongo } from './_refact/configuration/configuration.mongo';
-import logger from './_refact/core/core.logger.pino';
+import { configureMongo } from './configuration/configuration.mongo';
+import logger from './core/core.logger.pino';
 import app from './app';
 
 logger.info('App is starting');

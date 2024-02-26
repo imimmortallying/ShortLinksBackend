@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { TokensGenerator } from "../_refact/infra/tokens.generator/impl/tokens.generator";
+import { TokensGenerator } from "../infra/tokens.generator/impl/tokens.generator";
 import { RequestWithBody } from "../core/types/types";
-import { StatusCodes } from "../_refact/presentation/api/api.consts";
+import { StatusCodes } from "../presentation/api/api.consts";
 
 
 interface SendLinkDto {

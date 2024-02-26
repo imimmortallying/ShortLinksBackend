@@ -1,6 +1,6 @@
-import { ITokensGenerator } from "../model/ITokens.generator";
-import config from "config"
-import jwt from "jsonwebtoken"
+import { ITokensGenerator } from '../model/ITokens.generator';
+import config from 'config'
+import jwt from 'jsonwebtoken'
 
 interface Ikeys {
     JWT_ACCESS_SECRET: string,
@@ -26,7 +26,7 @@ export class TokensGenerator implements ITokensGenerator {
     validateRefreshToken(token:string) {
         try {
             const userData = jwt.verify(token, jwtKeys.JWT_REFRESH_SECRET) as JwtPayload;
-            console.log("DATA", userData)
+            console.log('DATA', userData)
             return {id: userData.id, username: userData.username};
         } catch (e) {
             return null;

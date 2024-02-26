@@ -5,7 +5,7 @@ import { RequestWithBody } from '../../api.types';
 import { validate } from '../../middlewares/api.middleware.validation';
 
 import { linkService } from '../../../../application/links';
-import { authMiddleware } from '../../../../../middleweres/authMiddleware';
+import { authMiddleware } from '../../../../middleweres/authMiddleware';
 
 const linkRouter = Router();
 

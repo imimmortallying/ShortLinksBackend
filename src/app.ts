@@ -3,9 +3,9 @@ import cors from 'cors';
 import express, { json } from 'express';
 import helmet from 'helmet';
 import pinoHttp, { Options as LoggerOptions } from 'pino-http';
-import logger from './_refact/core/core.logger.pino';
-import v1Router from './_refact/presentation/api/v1/api.v1.router';
-import redirectRouter from './_refact/presentation/api/v1/redirect/redirect.router';
+import logger from './core/core.logger.pino';
+import v1Router from './presentation/api/v1/api.v1.router';
+import redirectRouter from './presentation/api/v1/redirect/redirect.router';
 
 const loggerOptions: LoggerOptions = {
   logger: logger,
